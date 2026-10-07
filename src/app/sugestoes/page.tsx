@@ -26,24 +26,34 @@ export default function SugestoesPage() {
     setStatus("enviando");
     setMensagemErro("");
 
-    await new Promise((r) => setTimeout(r, 1200));
+    try {
+      // Chama a API de moderação com Gemini
+      const res = await fetch("/api/moderar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto }),
+      });
 
-    const palavrasBloqueadas = ["idiota", "burro", "ódio", "merda", "porra"];
-    const contemOfensa = palavrasBloqueadas.some((p) =>
-      texto.toLowerCase().includes(p)
-    );
+      const analise = await res.json();
 
-    if (contemOfensa) {
+      if (!analise.permitido) {
+        setStatus("erro");
+        setMensagemErro(
+          analise.motivo ||
+            "Seu texto contém linguagem que não está de acordo com as regras de convivência da escola. Por favor, reescreva de forma respeitosa."
+        );
+        return;
+      }
+
+      // Se passou na moderação → sucesso
+      // (no futuro aqui você salvaria no banco de dados)
+      setStatus("sucesso");
+      setTexto("");
+      setCategoria("");
+    } catch (err) {
       setStatus("erro");
-      setMensagemErro(
-        "Seu texto contém linguagem que não está de acordo com as regras de convivência da escola. Por favor, reescreva de forma respeitosa."
-      );
-      return;
+      setMensagemErro("Erro ao enviar. Tente novamente em alguns instantes.");
     }
-
-    setStatus("sucesso");
-    setTexto("");
-    setCategoria("");
   }
 
   return (
@@ -52,15 +62,16 @@ export default function SugestoesPage() {
         Sugestões e Reclamações
       </h1>
       <p className="text-muted mb-6">
-        Canal anônimo e moderado. Seu envio não registra identificação pessoal.
-        A equipe administrativa receberá apenas o conteúdo aprovado.
+        Canal anônimo e moderado por inteligência artificial. Seu envio não
+        registra identificação pessoal. A equipe administrativa receberá apenas
+        o conteúdo aprovado.
       </p>
 
       {status === "sucesso" ? (
         <div className="bg-accent-light border border-green-300 rounded-lg p-6 text-center">
           <p className="font-medium text-accent mb-2">Enviado com sucesso!</p>
           <p className="text-sm text-gray-700 mb-4">
-            Sua mensagem foi recebida e será analisada pela administração.
+            Sua mensagem passou pela moderação e será analisada pela administração.
           </p>
           <button
             type="button"
@@ -111,7 +122,7 @@ export default function SugestoesPage() {
             />
             <p className="text-xs text-muted mt-1">
               Mínimo de 10 caracteres. Mensagens ofensivas serão bloqueadas
-              automaticamente.
+              automaticamente pela inteligência artificial.
             </p>
           </div>
 
@@ -126,7 +137,7 @@ export default function SugestoesPage() {
             disabled={status === "enviando"}
             className="w-full bg-primary text-white font-medium py-2.5 rounded hover:bg-primary-dark transition-colors disabled:opacity-60"
           >
-            {status === "enviando" ? "Enviando..." : "Enviar mensagem anônima"}
+            {status === "enviando" ? "Analisando e enviando..." : "Enviar mensagem anônima"}
           </button>
         </form>
       )}
