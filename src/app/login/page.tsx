@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { getSupabase } from "@/lib/supabase/client";
 
 function isEmailGov(email: string) {
@@ -42,7 +41,7 @@ export default function LoginPage() {
         router.push("/");
         router.refresh();
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password: senha,
           options: {
@@ -53,7 +52,16 @@ export default function LoginPage() {
           },
         });
         if (error) throw error;
-        alert("Conta criada! Se pedir confirmação de e-mail, confirme e depois faça login.");
+
+        // Se a sessão já veio (confirmação de e-mail desligada), entra direto
+        if (data.session) {
+          router.push("/");
+          router.refresh();
+          return;
+        }
+
+        setErro("");
+        alert("Conta criada! Agora faça login com o mesmo e-mail e senha.");
         setModo("login");
       }
     } catch (err: unknown) {
@@ -65,14 +73,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-14">
-      <div className="bg-card border border-border rounded-2xl p-7 shadow-sm">
-        <h1 className="text-xl font-bold text-foreground mb-1">
-          {modo === "login" ? "Entrar no portal" : "Criar conta"}
-        </h1>
-        <p className="text-sm text-muted mb-6">
-          Acesso exclusivo para e-mails institucionais (.gov.br).
-        </p>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md bg-card border border-border rounded-2xl p-8 shadow-sm">
+        <div className="text-center mb-7">
+          <p className="text-xs font-semibold uppercase tracking-wide text-secondary mb-2">
+            Portal interno
+          </p>
+          <h1 className="text-xl font-bold text-foreground mb-1">
+            {modo === "login" ? "Entrar" : "Criar conta"}
+          </h1>
+          <p className="text-sm text-muted">
+            Acesso exclusivo para e-mails .gov.br
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {modo === "cadastro" && (
@@ -112,7 +125,7 @@ export default function LoginPage() {
               className="w-full border border-border rounded-xl px-3 py-2.5 text-sm bg-white"
               placeholder="seu.nome@escola.pr.gov.br"
             />
-            <p className="text-xs text-muted mt-1">Apenas endereços terminados em .gov.br</p>
+            <p className="text-xs text-muted mt-1">Somente endereços terminados em .gov.br</p>
           </div>
 
           <div>
@@ -142,16 +155,19 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-sm text-center text-muted mt-5">
+        <p className="text-sm text-center text-muted mt-6">
           {modo === "login" ? (
             <>
               Ainda não tem conta?{" "}
               <button
                 type="button"
-                onClick={() => setModo("cadastro")}
+                onClick={() => {
+                  setErro("");
+                  setModo("cadastro");
+                }}
                 className="text-primary font-medium underline"
               >
-                Cadastre-se
+                Criar conta
               </button>
             </>
           ) : (
@@ -159,10 +175,13 @@ export default function LoginPage() {
               Já tem conta?{" "}
               <button
                 type="button"
-                onClick={() => setModo("login")}
+                onClick={() => {
+                  setErro("");
+                  setModo("login");
+                }}
                 className="text-primary font-medium underline"
               >
-                Faça login
+                Fazer login
               </button>
             </>
           )}
