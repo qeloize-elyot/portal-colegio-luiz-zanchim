@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabase } from "@/lib/supabase/client";
 
 const categorias = [
   "Infraestrutura",
@@ -28,7 +28,6 @@ export default function SugestoesPage() {
     setMensagemErro("");
 
     try {
-      // 1. Moderação com Gemini
       const res = await fetch("/api/moderar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,16 +45,14 @@ export default function SugestoesPage() {
         return;
       }
 
-      // 2. Salvar no banco (sem identificação do usuário)
+      const supabase = getSupabase();
       const { error } = await supabase.from("feedbacks").insert({
         categoria,
         texto: texto.trim(),
         status: "PENDENTE",
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
 
       setStatus("sucesso");
       setTexto("");
