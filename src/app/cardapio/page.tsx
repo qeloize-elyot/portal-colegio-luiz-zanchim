@@ -22,12 +22,11 @@ const FALLBACK: DiaCardapio[] = [
 ];
 
 export default function CardapioPage() {
-  const { isAdmin, role, loading: roleLoading, email } = useRole();
+  const { isAdmin, loading: roleLoading } = useRole();
   const [itens, setItens] = useState<DiaCardapio[]>([]);
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
-  const [avisoBanco, setAvisoBanco] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -35,11 +34,6 @@ export default function CardapioPage() {
         const supabase = getSupabase();
         const { data, error } = await supabase.from("cardapio").select("*");
         if (error || !data || data.length === 0) {
-          setAvisoBanco(
-            error
-              ? "Banco ainda sem tabela cardápio. Rode o arquivo FIX_EDICAO.sql no Supabase. Enquanto isso você pode editar localmente (não salva no servidor)."
-              : "Tabela vazia. Rode o FIX_EDICAO.sql no Supabase para gravar de verdade."
-          );
           setItens(FALLBACK);
         } else {
           setItens(
@@ -47,7 +41,6 @@ export default function CardapioPage() {
           );
         }
       } catch {
-        setAvisoBanco("Erro ao conectar. Mostrando cardápio local.");
         setItens(FALLBACK);
       } finally {
         setLoading(false);
@@ -64,7 +57,7 @@ export default function CardapioPage() {
 
   async function salvar(item: DiaCardapio) {
     if (String(item.id).startsWith("local-")) {
-      setMsg("Este cardápio ainda é local. Rode o FIX_EDICAO.sql no Supabase para salvar de verdade.");
+      setMsg("Rode o FIX_RECURSAO.sql no Supabase para salvar no banco.");
       return;
     }
     setSalvando(item.id);
@@ -79,11 +72,7 @@ export default function CardapioPage() {
       })
       .eq("id", item.id);
     setSalvando(null);
-    setMsg(
-      error
-        ? "Erro ao salvar: " + error.message
-        : "Cardápio de " + item.dia + " salvo!"
-    );
+    setMsg(error ? "Erro ao salvar: " + error.message : "Cardápio de " + item.dia + " salvo!");
   }
 
   if (loading || roleLoading) {
@@ -92,37 +81,15 @@ export default function CardapioPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <div className="flex items-start gap-4 mb-4">
+      <div className="flex items-start gap-4 mb-6">
         <div className="text-4xl" aria-hidden>
           🍎
         </div>
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-1">Cardápio da Cantina</h1>
-          <p className="text-muted text-sm">
-            {isAdmin
-              ? "Edite os campos e clique em Salvar em cada dia."
-              : "Programação da semana."}
-          </p>
-          <p className="text-xs text-muted mt-1">
-            Seu perfil: <b>{role || "?"}</b>
-            {email ? ` · ${email}` : ""}
-          </p>
+          <p className="text-muted text-sm">Programação alimentar da semana.</p>
         </div>
       </div>
-
-      {!isAdmin && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-3 rounded-xl mb-4">
-          Os campos de edição só aparecem para conta <b>ADMIN</b>. Seu perfil atual é{" "}
-          <b>{role || "desconhecido"}</b>. Rode no Supabase:{" "}
-          <code className="text-[11px]">update public.profiles set role = 'ADMIN' where email = 'seu@email';</code>
-        </div>
-      )}
-
-      {avisoBanco && (
-        <div className="bg-primary-soft border border-border text-sm px-4 py-3 rounded-xl mb-4">
-          {avisoBanco}
-        </div>
-      )}
 
       {msg && <p className="mb-4 text-sm font-medium text-secondary">{msg}</p>}
 
