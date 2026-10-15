@@ -90,28 +90,48 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-        {/* Só a logo */}
-        <Link href="/" className="flex items-center shrink-0" onClick={() => setMenuOpen(false)}>
+      <div className="max-w-5xl mx-auto px-4 h-[68px] flex items-center justify-between gap-3">
+        {/* Logo + identidade */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 min-w-0 group"
+          onClick={() => setMenuOpen(false)}
+        >
           {!logoError ? (
             <Image
               src="/logo.png"
               alt="Logo do colégio"
-              width={40}
-              height={40}
-              className="rounded-full"
+              width={52}
+              height={52}
+              className="rounded-full shrink-0 ring-2 ring-primary/15 group-hover:ring-primary/40 transition-all"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold">
+            <div className="w-[52px] h-[52px] rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold shrink-0">
               LZ
             </div>
           )}
+
+          <div className="min-w-0 hidden sm:block">
+            <p className="text-[13px] font-bold text-foreground leading-tight truncate">
+              Portal LZ
+            </p>
+            <p className="text-[11px] text-muted leading-tight truncate">
+              comunidade escolar
+            </p>
+            {/* detalhe criativo */}
+            <div className="flex items-center gap-1 mt-1">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="w-2 h-2 rounded-full bg-secondary" />
+              <span className="w-2 h-2 rounded-full bg-accent" />
+              <span className="h-[2px] w-8 rounded-full bg-gradient-to-r from-primary via-accent to-secondary ml-0.5" />
+            </div>
+          </div>
         </Link>
 
-        {/* Ações à direita: Admin (se for) + Menu */}
-        <div className="flex items-center gap-2">
+        {/* Direita */}
+        <div className="flex items-center gap-2 shrink-0">
           {isAdmin && (
             <Link
               href="/admin"
@@ -141,7 +161,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Painel do menu (todas as páginas aqui dentro) */}
       {menuOpen && (
         <div className="border-t border-border bg-white shadow-sm">
           <nav className="max-w-5xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-3 gap-1">
