@@ -1,133 +1,117 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
-// Filtro local instantâneo (camada 1) para garantir bloqueio imediato de palavrões, ofensas e xingamentos comuns
-const TERMOS_OFENSIVOS = [
-  "porra", "caralho", "cacete", "merda", "bosta", "puta", "puto", "fdp", "filho da puta",
-  "filha da puta", "arrombado", "arrombada", "vai tomar no cu", "vtnc", "vsf", "vai se foder",
-  "vai se fuder", "foda-se", "fodase", "foder", "fuder", "cuzao", "cuzão", "cuzinho", "buceta",
-  "piroca", "rola", "pau no cu", "viado", "viadinho", "bicha", "sapatão", "macaco", "crioulo",
-  "vagabundo", "vagabunda", "piranha", "vadia", "corno", "otario", "otário", "imbecil",
-  "idiota", "retardado", "retardada", "burro", "burra", "lixo", "escroto", "escrota",
-  "desgraçado", "desgracado", "desgraçada", "maldito", "matar", "morrer", "suicidio",
-  "suicídio", "se mata", "se matar", "estupro", " Nazista", "nazismo", "hitler"
-];
-
-function normalizarTexto(str: string) {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s]/g, " ");
-}
-
-function contemOfensaLocal(texto: string): { bloqueado: boolean; termo?: string } {
-  const limpo = ` ${normalizarTexto(texto)} `;
-  for (const termo of TERMOS_OFENSIVOS) {
-    const termoLimpo = normalizarTexto(termo).trim();
-    if (!termoLimpo) continue;
-    // Verifica palavra inteira ou expressão
-    const regex = new RegExp(`\\b${termoLimpo}\\b`, "i");
-    if (regex.test(limpo) || limpo.includes(` ${termoLimpo} `)) {
-      return { bloqueado: true, termo };
-    }
-  }
-  return { bloqueado: false };
-}
-
 export async function POST(req: NextRequest) {
   try {
     const { texto } = await req.json();
 
-    if (!texto || typeof texto !== "string" || texto.trim().length < 5) {
+    if (!texto || typeof texto !== "string" || texto.trim().length < 10) {
       return NextResponse.json(
-        { permitido: false, motivo: "Texto muito curto. Escreva pelo menos 10 caracteres." },
+        {
+          permitido: false,
+          motivo: "Texto muito curto. Escreva pelo menos 10 caracteres.",
+        },
         { status: 400 }
       );
     }
 
-    // CAMADA 1: Verificação local instantânea (nunca falha, mesmo se a API oscilar)
-    const checagemLocal = contemOfensaLocal(texto);
-    if (checagemLocal.bloqueado) {
-      return NextResponse.json({
-        permitido: false,
-        motivo:
-          "Sua mensagem contém palavras ofensivas ou inadequadas ao ambiente escolar. Por favor, reescreva sua crítica ou sugestão de forma respeitosa.",
-      });
-    }
+    const apiKey = (
+      process.env.GEMINI_API_KEY ||
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
+      ""
+    ).trim();
 
-    // Se a chave Gemini não estiver configurada na Vercel, avisa ou usa apenas o filtro local
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({
-        permitido: true,
-        motivo: "Aprovado pelo filtro local.",
-      });
+      return NextResponse.json(
+        {
+          permitido: false,
+          motivo:
+            "Configuração pendente: A variável GEMINI_API_KEY não foi encontrada na Vercel. Adicione a chave em Settings > Environment Variables e faça um Redeploy.",
+        },
+        { status: 500 }
+      );
     }
 
-    // CAMADA 2: Inteligência Artificial Gemini (tenta modelos atuais em sequência)
-    const client = new GoogleGenerativeAI(apiKey);
-    const modelos = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    const genAI = new GoogleGenerativeAI(apiKey);
 
-    const prompt = `
-Você é um moderador rigoroso do canal de ouvidoria de um colégio cívico-militar brasileiro.
-Analise a mensagem abaixo e decida se ela é APROPRIADA ou INAPROPRIADA para ser enviada à direção.
+    const systemInstruction = `
+Você é o sistema de moderação por Inteligência Artificial da ouvidoria do Colégio Estadual Cívico-Militar Vereador Luiz Zanchim.
+Sua missão é analisar profundamente o CONTEXTO, o TOM e a INTENÇÃO da mensagem enviada pelo aluno.
 
 REGRAS RÍGIDAS DE BLOQUEIO (permitido: false):
-- Ofensas pessoais, xingamentos, palavrões (mesmo disfarçados ou abreviados), insultos a professores, funcionários ou alunos.
-- Bullying, deboche agressivo, difamação, calúnia, ameaças, discurso de ódio ou preconceito.
+1. Palavrões e xingamentos explícitos OU camuflados (ex: palavras escritas com números, símbolos, espaços, letras trocadas ou abreviadas para tentar burlar filtros).
+2. Ofensas sem palavrão: ataques pessoais, humilhação, deboche maldoso, ironia agressiva, diminuição de professores, diretores, militares, funcionários ou colegas (ex: chamar alguém de incompetente, inútil, ridículo, nojento, falar da aparência física ou atacar a honra de alguém).
+3. Bullying, cyberbullying, fofoca maldosa, difamação, assédio, preconceito, racismo, homofobia ou intolerância.
+4. Ameaças veladas ou diretas, incitação à violência, bagunça ou desrespeito às normas escolares.
 
-REGRAS DE PERMISSÃO (permitido: true):
-- Críticas construtivas, reclamações educadas sobre infraestrutura, cantina, aulas ou regras, elogios e sugestões.
+REGRAS DE APROVAÇÃO (permitido: true):
+- Críticas sérias, reclamações firmes porém respeitosas sobre aulas, provas, infraestrutura, banheiro, ventiladores, quadra, cantina, horários ou administração.
+- Sugestões de melhoria e elogios.
 
-Responda APENAS um JSON válido neste formato exato:
+Responda ESTRITAMENTE em JSON válido com este formato:
 {
-  "permitido": true ou false,
-  "motivo": "explicação curta e educada em português para o aluno"
+  "permitido": boolean,
+  "motivo": "Explicação clara e educada em português dizendo por que a mensagem foi bloqueada (ou 'Mensagem aprovada' se permitida)"
 }
-
-Mensagem do aluno:
-"""
-${texto.trim()}
-"""
 `;
+
+    // Tenta os modelos atuais do Gemini em ordem
+    const modelos = ["gemini-2.5-flash", "gemini-2.0-flash"];
+    let ultimoErro = "";
 
     for (const nomeModelo of modelos) {
       try {
-        const model = client.getGenerativeModel({ model: nomeModelo });
-        const result = await model.generateContent(prompt);
-        const resposta = result.response.text();
-        const jsonMatch = resposta.match(/\{[\s\S]*\}/);
+        const model = genAI.getGenerativeModel({
+          model: nomeModelo,
+          systemInstruction,
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: "application/json",
+          },
+        });
+
+        const result = await model.generateContent(
+          `Analise o contexto completo desta mensagem enviada por um estudante:\n"""\n${texto.trim()}\n"""`
+        );
+
+        const respostaTexto = result.response.text();
+        const jsonMatch = respostaTexto.match(/\{[\s\S]*\}/);
 
         if (jsonMatch) {
           const analise = JSON.parse(jsonMatch[0]);
+          const permitido = Boolean(analise.permitido);
+
           return NextResponse.json({
-            permitido: Boolean(analise.permitido),
+            permitido,
             motivo:
               analise.motivo ||
-              (analise.permitido
-                ? "Mensagem aprovada."
-                : "Linguagem inadequada para o ambiente escolar. Reescreva com respeito."),
+              (permitido
+                ? "Mensagem aprovada pela moderação."
+                : "O contexto da sua mensagem foi considerado ofensivo ou desrespeitoso. Por favor, reescreva sua crítica de maneira construtiva."),
           });
         }
-      } catch (errModel) {
-        console.warn(`Tentativa com modelo ${nomeModelo} falhou:`, errModel);
+      } catch (err) {
+        ultimoErro = err instanceof Error ? err.message : String(err);
+        console.error(`Erro no modelo ${nomeModelo}:`, ultimoErro);
       }
     }
 
-    // Se passou pelo filtro local rigoroso e todos os modelos deram timeout, libera
-    return NextResponse.json({
-      permitido: true,
-      motivo: "Mensagem verificada.",
-    });
-  } catch (error) {
-    console.error("Erro na moderação:", error);
+    // Importante: NUNCA aprova no escuro se a chamada da IA falhar!
     return NextResponse.json(
       {
         permitido: false,
-        motivo: "Não foi possível validar sua mensagem agora. Verifique o texto e tente novamente.",
+        motivo:
+          "A verificação de Inteligência Artificial não pôde validar sua mensagem agora (verifique se a GEMINI_API_KEY na Vercel é válida). Detalhe: " +
+          ultimoErro,
+      },
+      { status: 503 }
+    );
+  } catch (error) {
+    console.error("Erro fatal na rota /api/moderar:", error);
+    return NextResponse.json(
+      {
+        permitido: false,
+        motivo: "Erro ao processar a moderação da mensagem.",
       },
       { status: 500 }
     );
