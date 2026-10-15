@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabase } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,12 +21,7 @@ export default function LoginPage() {
     setCarregando(true);
 
     try {
-      // Opcional: restringir domínio gov (descomente se quiser forçar)
-      // if (!email.endsWith("@escola.pr.gov.br") && !email.endsWith("@professor.pr.gov.br")) {
-      //   setErro("Use um e-mail institucional (@escola.pr.gov.br).");
-      //   setCarregando(false);
-      //   return;
-      // }
+      const supabase = getSupabase();
 
       if (modo === "login") {
         const { error } = await supabase.auth.signInWithPassword({
@@ -48,8 +43,7 @@ export default function LoginPage() {
           },
         });
         if (error) throw error;
-        setErro("");
-        alert("Conta criada! Verifique seu e-mail se pedir confirmação, depois faça login.");
+        alert("Conta criada! Se pedir confirmação de e-mail, confirme e depois faça login.");
         setModo("login");
       }
     } catch (err: unknown) {
@@ -96,9 +90,6 @@ export default function LoginPage() {
                   <option value="PROFESSOR">Professor</option>
                   <option value="ADMIN">Administração / Direção</option>
                 </select>
-                <p className="text-xs text-muted mt-1">
-                  Contas de Administração devem ser aprovadas pela direção.
-                </p>
               </div>
             </>
           )}
@@ -146,22 +137,14 @@ export default function LoginPage() {
           {modo === "login" ? (
             <>
               Ainda não tem conta?{" "}
-              <button
-                type="button"
-                onClick={() => setModo("cadastro")}
-                className="text-primary font-medium underline"
-              >
+              <button type="button" onClick={() => setModo("cadastro")} className="text-primary font-medium underline">
                 Cadastre-se
               </button>
             </>
           ) : (
             <>
               Já tem conta?{" "}
-              <button
-                type="button"
-                onClick={() => setModo("login")}
-                className="text-primary font-medium underline"
-              >
+              <button type="button" onClick={() => setModo("login")} className="text-primary font-medium underline">
                 Faça login
               </button>
             </>
