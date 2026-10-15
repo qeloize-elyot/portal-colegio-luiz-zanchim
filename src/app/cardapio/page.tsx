@@ -18,6 +18,7 @@ export default function CardapioPage() {
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
+  const [erroBanco, setErroBanco] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -35,11 +36,17 @@ export default function CardapioPage() {
         setIsAdmin(profile?.role === "ADMIN");
       }
 
-      const { data } = await supabase.from("cardapio").select("*");
-      const lista = (data || []).sort(
-        (a, b) => ORDEM.indexOf(a.dia) - ORDEM.indexOf(b.dia)
-      );
-      setItens(lista);
+      const { data, error } = await supabase.from("cardapio").select("*");
+      if (error) {
+        setErroBanco(
+          "Tabela cardápio ainda não existe no banco. Rode o arquivo schema_extra.sql no Supabase (SQL Editor)."
+        );
+      } else {
+        const lista = (data || []).sort(
+          (a, b) => ORDEM.indexOf(a.dia) - ORDEM.indexOf(b.dia)
+        );
+        setItens(lista);
+      }
       setLoading(false);
     }
     load();
@@ -57,10 +64,18 @@ export default function CardapioPage() {
     const supabase = getSupabase();
     const { error } = await supabase
       .from("cardapio")
-      .update({ lanche: item.lanche, almoco: item.almoco, updated_at: new Date().toISOString() })
+      .update({
+        lanche: item.lanche,
+        almoco: item.almoco,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", item.id);
     setSalvando(null);
-    setMsg(error ? error.message : "Cardápio salvo!");
+    if (error) {
+      setMsg("Erro: " + error.message + " (confira se você é ADMIN e se o SQL foi rodado)");
+    } else {
+      setMsg("Cardápio de " + item.dia + " salvo!");
+    }
   }
 
   if (loading) {
@@ -69,26 +84,36 @@ export default function CardapioPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-foreground mb-2">Cardápio da Cantina</h1>
-      <p className="text-muted mb-6 text-sm">
-        Programação da semana.
-        {isAdmin ? " Você pode editar e salvar cada dia." : " Em caso de restrição alimentar, fale com a secretaria."}
-      </p>
+      <div className="flex items-start gap-4 mb-6">
+        <div className="text-4xl" aria-hidden>🍎</div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Cardápio da Cantina</h1>
+          <p className="text-muted text-sm">
+            {isAdmin
+              ? "Edite o lanche e o almoço e clique em Salvar em cada dia."
+              : "Programação da semana. Restrições alimentares: fale com a secretaria."}
+          </p>
+        </div>
+      </div>
 
-      {msg && (
-        <p className="mb-4 text-sm text-secondary font-medium">{msg}</p>
+      {erroBanco && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-3 rounded-xl mb-4">
+          {erroBanco}
+        </div>
       )}
 
-      {itens.length === 0 ? (
+      {msg && <p className="mb-4 text-sm font-medium text-secondary">{msg}</p>}
+
+      {itens.length === 0 && !erroBanco ? (
         <div className="border border-dashed border-border rounded-2xl p-8 text-center text-muted text-sm">
-          Nenhum cardápio cadastrado. Rode o arquivo schema_extra.sql no Supabase.
+          Nenhum item de cardápio. Rode o schema_extra.sql no Supabase.
         </div>
       ) : (
         <div className="space-y-4">
           {itens.map((dia) => (
             <div key={dia.id} className="bg-card border border-border rounded-2xl overflow-hidden">
-              <div className="bg-primary text-white px-4 py-2.5 font-medium text-sm">
-                {dia.dia}
+              <div className="bg-primary text-white px-4 py-2.5 font-medium text-sm flex items-center gap-2">
+                <span>🍽️</span> {dia.dia}
               </div>
               <div className="p-4 space-y-3">
                 <div>
