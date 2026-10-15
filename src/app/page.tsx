@@ -4,82 +4,79 @@ const services = [
   {
     href: "/materiais",
     title: "Materiais de Apoio",
-    description: "Slides, listas e resumos organizados por turma e disciplina.",
-    icon: "📚",
+    description: "Slides, listas de exercícios e resumos organizados por ano, turma e disciplina.",
   },
   {
     href: "/cardapio",
     title: "Cardápio da Cantina",
-    description: "Programação semanal de lanches e refeições.",
-    icon: "🍽️",
+    description: "Programação semanal de lanches e refeições da unidade escolar.",
   },
   {
     href: "/gremio",
-    title: "Painel do Grêmio",
-    description: "Notícias, comunicados, eventos e atas do Grêmio Estudantil.",
-    icon: "📢",
+    title: "Painel do Grêmio Estudantil",
+    description: "Comunicados oficiais, eventos, atas de reuniões e notícias do Grêmio.",
   },
   {
     href: "/enquetes",
-    title: "Enquetes",
-    description: "Participe das votações e dê sua opinião sobre decisões da escola.",
-    icon: "🗳️",
+    title: "Enquetes e Votações",
+    description: "Pesquisas rápidas para colher a opinião da comunidade estudantil.",
   },
   {
     href: "/feira",
     title: "Feira de Trocas",
-    description: "Doe, troque ou venda livros e uniformes entre alunos.",
-    icon: "🔄",
+    description: "Espaço para doação, troca ou venda de livros e uniformes entre alunos.",
   },
   {
     href: "/calculadora",
     title: "Calculadora de Notas",
-    description: "Calcule quanto precisa tirar para atingir a média.",
-    icon: "🧮",
+    description: "Ferramenta para estimar a nota necessária para atingir a média.",
   },
   {
     href: "/faq",
     title: "Perguntas Frequentes",
-    description: "Dúvidas sobre regimento, atestados, horários e procedimentos.",
-    icon: "❓",
+    description: "Informações sobre regimento, documentos, horários e procedimentos.",
   },
   {
     href: "/sugestoes",
     title: "Sugestões e Reclamações",
-    description: "Canal anônimo e moderado para feedbacks da comunidade.",
-    icon: "💬",
+    description: "Canal anônimo e moderado para envio de feedbacks à administração.",
   },
 ];
 
 export default function Home() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <section className="bg-white border border-border rounded-lg p-6 md:p-8 mb-8 shadow-sm">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
-          Bem-vindo ao Portal Interno
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      {/* Cabeçalho institucional */}
+      <section className="border-b border-border pb-8 mb-10">
+        <p className="text-sm font-medium text-primary uppercase tracking-wide mb-2">
+          Portal Interno
+        </p>
+        <h1 className="text-2xl md:text-3xl font-bold text-primary mb-3 leading-tight">
+          Colégio Estadual Cívico-Militar
+          <br />
+          Vereador Luiz Zanchim
         </h1>
-        <p className="text-muted max-w-2xl leading-relaxed">
-          Central de serviços do Colégio Estadual Cívico-Militar Vereador Luiz
-          Zanchim. Acesse materiais didáticos, informações da rotina escolar,
-          participe de enquetes e envie sugestões de forma segura.
+        <p className="text-muted max-w-2xl leading-relaxed text-[15px]">
+          Ambiente de uso exclusivo da comunidade escolar. Centralize o acesso a
+          materiais didáticos, informações da rotina e canais de comunicação
+          institucionais.
         </p>
       </section>
 
+      {/* Lista de serviços */}
       <section>
-        <h2 className="text-lg font-semibold text-primary mb-4">
-          Serviços disponíveis
+        <h2 className="text-sm font-semibold text-primary uppercase tracking-wide mb-5">
+          Serviços
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border border border-border rounded-lg overflow-hidden">
           {services.map((service) => (
             <Link
               key={service.href}
               href={service.href}
-              className="bg-white border border-border rounded-lg p-5 hover:border-primary hover:shadow-md transition-all group"
+              className="bg-white p-5 hover:bg-slate-50 transition-colors group"
             >
-              <div className="text-3xl mb-3" aria-hidden>
-                {service.icon}
-              </div>
-              <h3 className="font-semibold text-primary group-hover:underline mb-1">
+              <h3 className="font-semibold text-primary group-hover:underline mb-1.5 text-[15px]">
                 {service.title}
               </h3>
               <p className="text-sm text-muted leading-relaxed">
@@ -90,19 +87,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Avisos institucionais */}
       <section className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-accent-light border border-green-200 rounded-lg p-5">
-          <h3 className="font-semibold text-accent mb-1">Acesso restrito</h3>
-          <p className="text-sm text-gray-700">
-            Algumas áreas exigem login com perfil de aluno, professor, grêmio ou
-            administração. Em breve a autenticação estará disponível.
+        <div className="border border-border bg-white rounded-lg p-5">
+          <h3 className="font-semibold text-primary text-sm mb-1.5">
+            Acesso controlado
+          </h3>
+          <p className="text-sm text-muted leading-relaxed">
+            Algumas áreas do portal exigem autenticação com perfil autorizado
+            (aluno, professor, grêmio ou administração).
           </p>
         </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-5">
-          <h3 className="font-semibold text-primary mb-1">Canal seguro</h3>
-          <p className="text-sm text-gray-700">
-            O formulário de sugestões é anônimo e passa por moderação automática
-            para garantir o respeito e a convivência.
+        <div className="border border-border bg-white rounded-lg p-5">
+          <h3 className="font-semibold text-primary text-sm mb-1.5">
+            Canal de comunicação
+          </h3>
+          <p className="text-sm text-muted leading-relaxed">
+            O formulário de sugestões é anônimo e passa por moderação antes de
+            chegar à equipe administrativa.
           </p>
         </div>
       </section>
