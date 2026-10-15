@@ -1,28 +1,8 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
-let _client: SupabaseClient | null = null;
-
-export function getSupabase(): SupabaseClient {
-  if (_client) return _client;
-
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-
-  // No build (sem env), cria cliente dummy para não quebrar a compilação
-  if (!url || !key) {
-    _client = createClient("https://placeholder.supabase.co", "placeholder-key");
-    return _client;
-  }
-
-  _client = createClient(url, key);
-  return _client;
+export function getSupabase() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key"
+  );
 }
-
-/** @deprecated use getSupabase() */
-export const supabase = new Proxy({} as SupabaseClient, {
-  get(_target, prop) {
-    const client = getSupabase();
-    const value = (client as unknown as Record<string | symbol, unknown>)[prop];
-    return typeof value === "function" ? value.bind(client) : value;
-  },
-});
