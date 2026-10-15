@@ -102,7 +102,6 @@ export default function LoginPage() {
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#faf6f1] overflow-y-auto">
-      {/* formas decorativas de fundo */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#c45c26]/12 blur-2xl" />
         <div className="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-[#2f6f4e]/10 blur-2xl" />
@@ -110,7 +109,6 @@ export default function LoginPage() {
       </div>
 
       <div className="relative min-h-full flex flex-col lg:flex-row">
-        {/* Lado esquerdo — ilustração (desktop) */}
         <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 bg-gradient-to-br from-[#c45c26] to-[#9a4520] text-white">
           <div className="max-w-sm text-center">
             <IllustracaoLivro />
@@ -127,10 +125,8 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Lado direito — formulário */}
         <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
           <div className="w-full max-w-[400px]">
-            {/* ilustração mobile */}
             <div className="lg:hidden mb-6 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#c45c26] text-white text-xl font-bold mb-3">
                 LZ
@@ -246,7 +242,8 @@ export default function LoginPage() {
                   <>
                     Já tem conta?{" "}
                     <button
-                      type="button"\cos onClick={() => {
+                      type="button"
+                      onClick={() => {
                         setErro("");
                         setModo("login");
                       }}
