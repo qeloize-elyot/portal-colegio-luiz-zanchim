@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { getSupabase } from "@/lib/supabase/client";
 
 const navItems = [
@@ -12,13 +11,13 @@ const navItems = [
   { href: "/cardapio", label: "Cardápio" },
   { href: "/gremio", label: "Grêmio" },
   { href: "/enquetes", label: "Enquetes" },
-  { href: "/feira", label: "Feira" },
+  { href: "/feira", label: "Feira de Trocas" },
+  { href: "/calculadora", label: "Calculadora" },
   { href: "/faq", label: "Dúvidas" },
   { href: "/sugestoes", label: "Sugestões" },
 ];
 
 export default function Header() {
-  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -40,7 +39,6 @@ export default function Header() {
 
         setUserEmail(user.email ?? null);
 
-        // tenta ler o perfil; se não existir, cria com role do metadata
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
@@ -50,8 +48,7 @@ export default function Header() {
         if (profile?.role) {
           setRole(profile.role);
         } else {
-          const metaRole =
-            (user.user_metadata?.role as string) || "ALUNO";
+          const metaRole = (user.user_metadata?.role as string) || "ALUNO";
           await supabase.from("profiles").upsert({
             id: user.id,
             email: user.email,
@@ -93,8 +90,9 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
-        <Link href="/" className="flex items-center shrink-0">
+      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+        {/* Só a logo */}
+        <Link href="/" className="flex items-center shrink-0" onClick={() => setMenuOpen(false)}>
           {!logoError ? (
             <Image
               src="/logo.png"
@@ -112,97 +110,73 @@ export default function Header() {
           )}
         </Link>
 
-        {/* Nav desktop — compacta */}
-        <nav className="hidden md:flex items-center gap-0.5 text-[12px] font-medium text-foreground/70">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="px-2 py-1.5 rounded-md hover:text-primary hover:bg-primary-soft transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
+        {/* Ações à direita: Admin (se for) + Menu */}
+        <div className="flex items-center gap-2">
           {isAdmin && (
             <Link
               href="/admin"
-              className="ml-1 px-2.5 py-1.5 rounded-md bg-secondary text-white hover:opacity-90 transition-opacity"
+              className="text-[12px] font-semibold px-3 py-1.5 rounded-lg bg-secondary text-white hover:opacity-90"
+              onClick={() => setMenuOpen(false)}
             >
               Admin
-            </Link>
-          )}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          {userEmail ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="hidden sm:inline text-[11px] text-muted hover:text-primary px-2 py-1"
-              title={userEmail}
-            >
-              Sair
-            </button>
-          ) : (
-            <Link
-              href="/login"
-              className="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-primary text-white"
-            >
-              Entrar
             </Link>
           )}
 
           <button
             type="button"
-            className="md:hidden p-1.5 rounded-md hover:bg-primary-soft"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-primary-soft transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
+            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={menuOpen}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {menuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
+            Menu
           </button>
         </div>
       </div>
 
+      {/* Painel do menu (todas as páginas aqui dentro) */}
       {menuOpen && (
-        <nav className="md:hidden border-t border-border bg-white px-4 py-2 flex flex-col">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="px-2 py-2.5 text-sm rounded-md hover:bg-primary-soft"
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
-          {isAdmin && (
-            <Link
-              href="/admin"
-              className="px-2 py-2.5 text-sm font-semibold text-secondary"
-              onClick={() => setMenuOpen(false)}
-            >
-              Painel Admin
-            </Link>
-          )}
-          {userEmail && (
-            <button
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                handleLogout();
-              }}
-              className="px-2 py-2.5 text-sm text-left text-muted"
-            >
-              Sair
-            </button>
-          )}
-        </nav>
+        <div className="border-t border-border bg-white shadow-sm">
+          <nav className="max-w-5xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-3 gap-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="px-3 py-2.5 text-sm rounded-lg text-foreground/80 hover:bg-primary-soft hover:text-primary transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+            {userEmail ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
+                className="px-3 py-2.5 text-sm rounded-lg text-left text-muted hover:bg-primary-soft"
+              >
+                Sair
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="px-3 py-2.5 text-sm rounded-lg font-semibold text-primary"
+                onClick={() => setMenuOpen(false)}
+              >
+                Entrar
+              </Link>
+            )}
+          </nav>
+        </div>
       )}
     </header>
   );
