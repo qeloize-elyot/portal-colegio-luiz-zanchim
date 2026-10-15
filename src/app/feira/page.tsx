@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
+import {
+  PageHeroBanner,
+  FeiraIllustration,
+  EmptyStateIllustration,
+  WaveDivider,
+} from "@/components/SvgDecorations";
 
 type Anuncio = {
   id: string;
@@ -68,25 +74,29 @@ export default function FeiraPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-foreground mb-2">Feira de Trocas</h1>
-      <p className="text-muted mb-6 text-sm">
-        Anuncie doações, trocas ou vendas de livros e uniformes entre alunos.
-      </p>
+      <PageHeroBanner
+        badge="Economia Solidária Estudantil"
+        title="Feira de Trocas"
+        subtitle="Anuncie doações, trocas ou vendas de livros didáticos, materiais e uniformes do Colégio Luiz Zanchim."
+        accentColor="#2f6f4e"
+        softBg="#e8f3ec"
+        illustration={<FeiraIllustration />}
+      />
 
-      <form onSubmit={publicar} className="bg-card border border-border rounded-2xl p-5 mb-8 space-y-3">
-        <h2 className="font-bold text-sm">Novo anúncio</h2>
+      <form onSubmit={publicar} className="bg-card border border-border rounded-3xl p-6 mb-8 space-y-3 shadow-2xs">
+        <h2 className="font-bold text-sm text-secondary">Publicar novo anúncio</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input
             required
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
-            placeholder="Título (ex: Livro de Matemática 2º ano)"
-            className="border border-border rounded-xl px-3 py-2 text-sm"
+            placeholder="Título (ex: Uniforme Tamanho M ou Livro 2º ano)"
+            className="border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
           />
           <select
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
-            className="border border-border rounded-xl px-3 py-2 text-sm"
+            className="border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
           >
             <option value="DOACAO">Doação</option>
             <option value="TROCA">Troca</option>
@@ -97,20 +107,20 @@ export default function FeiraPage() {
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
           rows={2}
-          placeholder="Descrição (opcional)"
-          className="w-full border border-border rounded-xl px-3 py-2 text-sm"
+          placeholder="Descrição do estado do item (opcional)"
+          className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
         />
         <input
           value={contato}
           onChange={(e) => setContato(e.target.value)}
-          placeholder="Contato (turma, WhatsApp, etc.)"
-          className="w-full border border-border rounded-xl px-3 py-2 text-sm"
+          placeholder="Contato (turma, turno, WhatsApp, etc.)"
+          className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
         />
         {erro && <p className="text-sm text-red-700">{erro}</p>}
         <button
           type="submit"
           disabled={enviando || !userId}
-          className="bg-primary text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-primary-dark disabled:opacity-60"
+          className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-dark disabled:opacity-60"
         >
           {enviando ? "Publicando..." : "Publicar anúncio"}
         </button>
@@ -119,15 +129,16 @@ export default function FeiraPage() {
       {loading ? (
         <p className="text-muted text-sm">Carregando...</p>
       ) : lista.length === 0 ? (
-        <div className="border border-dashed border-border rounded-2xl p-8 text-center text-muted text-sm">
-          Nenhum anúncio ainda. Seja o primeiro!
-        </div>
+        <EmptyStateIllustration label="Nenhum anúncio publicado ainda. Seja o primeiro a compartilhar!" />
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {lista.map((a) => (
-            <article key={a.id} className="bg-card border border-border rounded-2xl p-4">
-              <div className="flex flex-wrap gap-2 mb-1">
-                <span className="text-[11px] font-semibold bg-secondary-soft text-secondary px-2 py-0.5 rounded-full">
+            <article
+              key={a.id}
+              className="bg-card border border-border rounded-3xl p-5 hover:border-secondary transition-colors relative overflow-hidden"
+            >
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="text-[11px] font-bold bg-secondary-soft text-secondary px-2.5 py-0.5 rounded-full">
                   {a.tipo}
                 </span>
                 <span className="text-[11px] text-muted">
@@ -137,12 +148,16 @@ export default function FeiraPage() {
               <h3 className="font-bold text-foreground">{a.titulo}</h3>
               {a.descricao && <p className="text-sm text-muted mt-1">{a.descricao}</p>}
               {a.contato && (
-                <p className="text-xs text-primary mt-2">Contato: {a.contato}</p>
+                <p className="text-xs font-semibold text-primary mt-3 bg-primary-soft/60 inline-block px-3 py-1 rounded-lg">
+                  Contato: {a.contato}
+                </p>
               )}
             </article>
           ))}
         </div>
       )}
+
+      <WaveDivider color="#2f6f4e" />
     </div>
   );
 }

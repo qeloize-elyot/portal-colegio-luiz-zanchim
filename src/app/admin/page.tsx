@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase/client";
+import {
+  PageHeroBanner,
+  AdminIllustration,
+  EmptyStateIllustration,
+  WaveDivider,
+} from "@/components/SvgDecorations";
 
 type Feedback = {
   id: string;
@@ -36,7 +42,6 @@ export default function AdminPage() {
           return;
         }
 
-        // Lê perfil; se não existir ou estiver errado, tenta corrigir pelo metadata do cadastro
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
@@ -46,7 +51,6 @@ export default function AdminPage() {
         let role = profile?.role || "";
         const metaRole = (user.user_metadata?.role as string) || "";
 
-        // Se o cadastro foi como ADMIN mas o banco ficou ALUNO, corrige
         if (metaRole === "ADMIN" && role !== "ADMIN") {
           await supabase.from("profiles").upsert({
             id: user.id,
@@ -57,7 +61,6 @@ export default function AdminPage() {
           role = "ADMIN";
         }
 
-        // Se não tem perfil, cria
         if (!role) {
           const novo = metaRole || "ALUNO";
           await supabase.from("profiles").upsert({
@@ -123,7 +126,7 @@ export default function AdminPage() {
   if (!autorizado) {
     return (
       <div className="max-w-lg mx-auto px-4 py-14">
-        <div className="bg-card border border-border rounded-2xl p-6 text-center">
+        <div className="bg-card border border-border rounded-3xl p-6 text-center">
           <p className="text-foreground font-semibold mb-2">Acesso restrito</p>
           <p className="text-muted text-sm mb-4">{erro}</p>
           <p className="text-xs text-muted mb-4">
@@ -152,21 +155,21 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground mb-1">
-          Painel Administrativo
-        </h1>
-        <p className="text-muted text-sm">
-          Gerencie sugestões, reclamações e conteúdos da escola.
-        </p>
-      </div>
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      <PageHeroBanner
+        badge="Gestão Escolar"
+        title="Painel Administrativo"
+        subtitle="Acompanhe sugestões e reclamações moderadas e gerencie os conteúdos publicados no portal."
+        accentColor="#1b365d"
+        softBg="#e8eef5"
+        illustration={<AdminIllustration />}
+      />
 
       <div className="flex gap-2 mb-6">
         <button
           type="button"
           onClick={() => setAba("feedbacks")}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+          className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
             aba === "feedbacks"
               ? "bg-primary text-white"
               : "bg-white border border-border text-foreground hover:border-primary"
@@ -177,7 +180,7 @@ export default function AdminPage() {
         <button
           type="button"
           onClick={() => setAba("gestao")}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+          className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
             aba === "gestao"
               ? "bg-primary text-white"
               : "bg-white border border-border text-foreground hover:border-primary"
@@ -190,15 +193,13 @@ export default function AdminPage() {
       {aba === "feedbacks" && (
         <>
           {feedbacks.length === 0 ? (
-            <div className="bg-card border border-border rounded-2xl p-8 text-center text-muted">
-              Nenhuma mensagem recebida ainda.
-            </div>
+            <EmptyStateIllustration label="Nenhuma mensagem recebida ainda." />
           ) : (
             <div className="space-y-4">
               {feedbacks.map((fb) => (
                 <article
                   key={fb.id}
-                  className="bg-card border border-border rounded-2xl p-5"
+                  className="bg-card border border-border rounded-3xl p-5"
                 >
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="text-xs font-semibold bg-primary-soft text-primary px-2.5 py-1 rounded-full">
@@ -248,16 +249,16 @@ export default function AdminPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link
             href="/cardapio"
-            className="bg-card border border-border rounded-2xl p-5 hover:border-primary transition-colors"
+            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
           >
             <h3 className="font-bold text-foreground mb-1">Cardápio semanal</h3>
             <p className="text-sm text-muted">
-              Visualize a programação da cantina.
+              Visualize e edite a programação da cantina.
             </p>
           </Link>
           <Link
             href="/materiais"
-            className="bg-card border border-border rounded-2xl p-5 hover:border-primary transition-colors"
+            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
           >
             <h3 className="font-bold text-foreground mb-1">Materiais</h3>
             <p className="text-sm text-muted">
@@ -266,16 +267,16 @@ export default function AdminPage() {
           </Link>
           <Link
             href="/enquetes"
-            className="bg-card border border-border rounded-2xl p-5 hover:border-primary transition-colors"
+            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
           >
             <h3 className="font-bold text-foreground mb-1">Enquetes</h3>
             <p className="text-sm text-muted">
-              Acompanhe votações da comunidade.
+              Crie e acompanhe votações da comunidade.
             </p>
           </Link>
           <Link
             href="/gremio"
-            className="bg-card border border-border rounded-2xl p-5 hover:border-primary transition-colors"
+            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
           >
             <h3 className="font-bold text-foreground mb-1">Grêmio e eventos</h3>
             <p className="text-sm text-muted">
@@ -284,6 +285,8 @@ export default function AdminPage() {
           </Link>
         </div>
       )}
+
+      <WaveDivider color="#1b365d" />
     </div>
   );
 }

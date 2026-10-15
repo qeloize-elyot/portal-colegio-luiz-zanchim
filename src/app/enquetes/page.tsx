@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
 import { useRole } from "@/lib/useRole";
+import {
+  PageHeroBanner,
+  EnquetesIllustration,
+  EmptyStateIllustration,
+  WaveDivider,
+} from "@/components/SvgDecorations";
 
 type Enquete = {
   id: string;
@@ -100,23 +106,24 @@ export default function EnquetesPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <div className="flex items-start gap-3 mb-6">
-        <span className="text-4xl">🗳️</span>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Enquetes</h1>
-          <p className="text-muted text-sm">Participe das votações da escola.</p>
-        </div>
-      </div>
+      <PageHeroBanner
+        badge="Voz Ativa Estudantil"
+        title="Enquetes da Escola"
+        subtitle="Participe das votações e ajude a construir decisões sobre projetos, eventos e melhorias do nosso colégio."
+        accentColor="#c45c26"
+        softBg="#fdf0e6"
+        illustration={<EnquetesIllustration />}
+      />
 
       {isAdmin && (
-        <form onSubmit={criar} className="bg-card border border-border rounded-2xl p-5 mb-8 space-y-3">
-          <h2 className="font-bold text-sm">Criar enquete</h2>
+        <form onSubmit={criar} className="bg-card border border-border rounded-3xl p-6 mb-8 space-y-3 shadow-2xs">
+          <h2 className="font-bold text-sm text-primary">Criar nova enquete</h2>
           <input
             required
             value={pergunta}
             onChange={(e) => setPergunta(e.target.value)}
             placeholder="Pergunta da enquete"
-            className="w-full border border-border rounded-xl px-3 py-2 text-sm"
+            className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
           />
           <div>
             <label className="block text-xs font-medium text-muted mb-1">
@@ -127,14 +134,14 @@ export default function EnquetesPage() {
               value={opcoesTxt}
               onChange={(e) => setOpcoesTxt(e.target.value)}
               rows={4}
-              className="w-full border border-border rounded-xl px-3 py-2 text-sm"
+              className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
             />
           </div>
           {erro && <p className="text-sm text-red-700">{erro}</p>}
           <button
             type="submit"
             disabled={enviando}
-            className="bg-primary text-white text-sm font-medium px-4 py-2 rounded-xl disabled:opacity-60"
+            className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-dark disabled:opacity-60"
           >
             {enviando ? "Criando..." : "Criar enquete"}
           </button>
@@ -144,29 +151,52 @@ export default function EnquetesPage() {
       {loading ? (
         <p className="text-muted text-sm">Carregando...</p>
       ) : lista.length === 0 ? (
-        <div className="border border-dashed border-border rounded-2xl p-8 text-center text-muted text-sm">
-          <p className="text-3xl mb-2">🗳️</p>
-          Nenhuma enquete ativa.
-        </div>
+        <EmptyStateIllustration label="Nenhuma enquete ativa neste momento." />
       ) : (
         <div className="space-y-5">
           {lista.map((eq) => (
-            <div key={eq.id} className="bg-card border border-border rounded-2xl p-5">
-              <h2 className="font-bold text-foreground mb-3">{eq.pergunta}</h2>
+            <div
+              key={eq.id}
+              className="bg-card border border-border rounded-3xl p-6 relative overflow-hidden shadow-2xs"
+            >
+              <svg
+                className="pointer-events-none absolute right-3 top-3 w-20 h-20 opacity-10"
+                viewBox="0 0 64 64"
+                fill="none"
+              >
+                <rect x="10" y="34" width="10" height="20" rx="3" fill="#c45c26" />
+                <rect x="26" y="18" width="10" height="36" rx="3" fill="#2f6f4e" />
+                <rect x="42" y="26" width="10" height="28" rx="3" fill="#e6b422" />
+              </svg>
+
+              <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-primary bg-primary-soft px-2.5 py-0.5 rounded-full mb-2">
+                Votação Aberta
+              </span>
+              <h2 className="font-bold text-lg text-foreground mb-4">{eq.pergunta}</h2>
+
               {votados[eq.id] !== undefined ? (
-                <p className="text-sm text-secondary">
-                  Seu voto: <strong>{eq.opcoes[votados[eq.id]]}</strong>
-                </p>
+                <div className="bg-secondary-soft border border-secondary/30 rounded-2xl px-4 py-3 flex items-center gap-2.5 text-sm text-secondary">
+                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span>
+                    Voto registrado com sucesso:{" "}
+                    <strong>{eq.opcoes[votados[eq.id]]}</strong>
+                  </span>
+                </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {eq.opcoes.map((op, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => votar(eq.id, idx)}
-                      className="w-full text-left px-4 py-2.5 border border-border rounded-xl hover:border-primary text-sm"
+                      className="w-full text-left px-4 py-3 border border-border rounded-2xl hover:border-primary hover:bg-primary-soft/50 text-sm font-medium transition-all flex items-center justify-between group"
                     >
-                      {op}
+                      <span>{op}</span>
+                      <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity font-semibold">
+                        Confirmar voto →
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -175,6 +205,8 @@ export default function EnquetesPage() {
           ))}
         </div>
       )}
+
+      <WaveDivider color="#c45c26" />
     </div>
   );
 }

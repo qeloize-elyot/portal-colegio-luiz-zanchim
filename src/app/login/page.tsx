@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
+import { HomeHeroIllustration } from "@/components/SvgDecorations";
 
 function isEmailGov(email: string) {
   return email.trim().toLowerCase().endsWith(".gov.br");
@@ -80,8 +81,8 @@ export default function LoginPage() {
   const titulo = modo === "login" ? "Bem-vindo de volta" : "Criar sua conta";
   const subtitulo =
     modo === "login"
-      ? "Entre com seu e-mail institucional"
-      : "Use um e-mail terminado em .gov.br";
+      ? "Entre com seu e-mail institucional (@escola.pr.gov.br)"
+      : "Use um e-mail institucional terminado em .gov.br";
   const textoBotao =
     carregando ? "Aguarde..." : modo === "login" ? "Entrar no portal" : "Criar conta";
 
@@ -94,52 +95,32 @@ export default function LoginPage() {
       </div>
 
       <div className="relative min-h-full flex flex-col lg:flex-row">
-        <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 bg-gradient-to-br from-[#c45c26] to-[#9a4520] text-white">
-          <div className="max-w-sm text-center">
-            <svg viewBox="0 0 200 160" className="w-full max-w-[220px] mx-auto" aria-hidden="true">
-              <ellipse cx="100" cy="140" rx="70" ry="12" fill="#e8d5c4" opacity="0.5" />
-              <path d="M40 50 L100 30 L160 50 L160 110 L100 130 L40 110 Z" fill="#c45c26" />
-              <path d="M100 30 L100 130" stroke="#faf6f1" strokeWidth="3" />
-              <path d="M55 60 L90 48" stroke="#fdf0e6" strokeWidth="4" strokeLinecap="round" />
-              <path d="M55 75 L90 63" stroke="#fdf0e6" strokeWidth="4" strokeLinecap="round" />
-              <path d="M55 90 L85 78" stroke="#fdf0e6" strokeWidth="4" strokeLinecap="round" />
-              <path d="M110 48 L145 60" stroke="#fdf0e6" strokeWidth="4" strokeLinecap="round" />
-              <path d="M110 63 L145 75" stroke="#fdf0e6" strokeWidth="4" strokeLinecap="round" />
-              <circle cx="155" cy="40" r="18" fill="#e6b422" />
-              <path
-                d="M148 40 L153 45 L163 33"
-                fill="none"
-                stroke="#2c2416"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <h2 className="mt-8 text-2xl font-bold leading-tight">
+        <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 bg-gradient-to-br from-[#1b365d] via-[#2f6f4e] to-[#9a4520] text-white relative overflow-hidden">
+          <svg
+            className="pointer-events-none absolute -top-16 -left-16 w-80 h-80 opacity-15"
+            viewBox="0 0 200 200"
+            fill="none"
+          >
+            <circle cx="100" cy="100" r="85" stroke="#e6b422" strokeWidth="3" strokeDasharray="10 8" />
+          </svg>
+          <div className="max-w-sm text-center relative z-10">
+            <HomeHeroIllustration />
+            <h2 className="mt-6 text-2xl font-extrabold leading-tight">
               Portal da nossa comunidade escolar
             </h2>
             <p className="mt-3 text-white/85 text-[15px] leading-relaxed">
-              Materiais, cardápio, grêmio, enquetes e um canal de escuta. Espaço
-              seguro só para quem faz parte da escola.
+              Materiais, cardápio da cantina, grêmio estudantil, enquetes e um canal de escuta seguro para quem faz parte do Colégio Luiz Zanchim.
             </p>
-            <svg viewBox="0 0 200 120" className="w-full max-w-[200px] mx-auto mt-10" aria-hidden="true">
-              <circle cx="60" cy="40" r="18" fill="#2f6f4e" />
-              <ellipse cx="60" cy="85" rx="28" ry="22" fill="#2f6f4e" />
-              <circle cx="140" cy="40" r="18" fill="#c45c26" />
-              <ellipse cx="140" cy="85" rx="28" ry="22" fill="#c45c26" />
-              <circle cx="100" cy="50" r="16" fill="#e6b422" />
-              <ellipse cx="100" cy="92" rx="24" ry="18" fill="#e6b422" />
-            </svg>
           </div>
         </div>
 
         <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
           <div className="w-full max-w-[400px]">
             <div className="lg:hidden mb-6 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#c45c26] text-white text-xl font-bold mb-3">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#c45c26] text-white text-xl font-bold mb-3 shadow-sm">
                 LZ
               </div>
-              <p className="text-sm text-[#6b5b4b]">Colégio Cívico-Militar · Paraná</p>
+              <p className="text-sm font-semibold text-[#6b5b4b]">Colégio Cívico-Militar · Paraná</p>
             </div>
 
             <div className="bg-white border border-[#e8d5c4] rounded-3xl p-7 sm:p-8 shadow-sm">
@@ -247,7 +228,7 @@ export default function LoginPage() {
             </div>
 
             <p className="text-center text-[11px] text-[#6b5b4b]/80 mt-6">
-              Colégio Estadual Cívico-Militar Vereador Luiz Zanchim
+              Colégio Estadual Cívico-Militar Vereador Luiz Zanchim · CCMPR
             </p>
           </div>
         </div>

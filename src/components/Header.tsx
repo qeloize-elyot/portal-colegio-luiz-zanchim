@@ -18,12 +18,54 @@ const navItems = [
 ];
 
 const atalhos = [
-  { href: "/materiais", label: "Materiais", emoji: "📚" },
-  { href: "/cardapio", label: "Cantina", emoji: "🍎" },
-  { href: "/gremio", label: "Grêmio", emoji: "📣" },
-  { href: "/feira", label: "Feira", emoji: "🔄" },
-  { href: "/sugestoes", label: "Ouvidoria", emoji: "💬" },
+  { href: "/materiais", label: "Materiais", icon: "book", color: "#c45c26" },
+  { href: "/cardapio", label: "Cantina", icon: "apple", color: "#2f6f4e" },
+  { href: "/gremio", label: "Grêmio", icon: "megaphone", color: "#e6b422" },
+  { href: "/feira", label: "Feira", icon: "swap", color: "#2f6f4e" },
+  { href: "/sugestoes", label: "Ouvidoria", icon: "chat", color: "#c45c26" },
 ];
+
+function AtalhoSvg({ type, color }: { type: string; color: string }) {
+  switch (type) {
+    case "book":
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          <rect x="4" y="4" width="16" height="16" rx="3" fill={color} fillOpacity="0.18" />
+          <path d="M7 7h10v10H7z" stroke={color} strokeWidth="1.8" strokeLinejoin="round" />
+          <path d="M12 7v10" stroke={color} strokeWidth="1.8" />
+        </svg>
+      );
+    case "apple":
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          <circle cx="12" cy="13" r="7" fill={color} fillOpacity="0.18" stroke={color} strokeWidth="1.8" />
+          <path d="M12 6c0-2 1.5-3 3-3" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      );
+    case "megaphone":
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          <polygon points="5,10 16,6 16,18 5,14" fill={color} fillOpacity="0.22" stroke={color} strokeWidth="1.8" strokeLinejoin="round" />
+          <path d="M19 9a4 4 0 010 6" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      );
+    case "swap":
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          <circle cx="12" cy="12" r="8" fill={color} fillOpacity="0.14" />
+          <path d="M7 9h10l-2.5-2.5M17 15H7l2.5 2.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case "chat":
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          <path d="M5 6h14a2 2 0 012 2v7a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V8a2 2 0 012-2z" fill={color} fillOpacity="0.18" stroke={color} strokeWidth="1.8" strokeLinejoin="round" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -97,7 +139,7 @@ export default function Header() {
   const isAdmin = role === "ADMIN";
 
   return (
-    <header className="bg-white border-b border-border sticky top-0 z-50">
+    <header className="bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-3 sm:px-4 h-[76px] flex items-center gap-2 sm:gap-3">
         <Link
           href="/"
@@ -110,7 +152,7 @@ export default function Header() {
               alt="Logo do colégio"
               width={54}
               height={54}
-              className="rounded-full ring-2 ring-primary/20 group-hover:ring-primary/45 transition-all"
+              className="rounded-full ring-2 ring-primary/25 group-hover:ring-primary/55 transition-all"
               priority
               onError={() => setLogoError(true)}
             />
@@ -120,29 +162,34 @@ export default function Header() {
             </div>
           )}
           <div className="hidden lg:block leading-tight">
-            <p className="text-[13px] font-bold text-foreground">Portal LZ</p>
-            <p className="text-[10px] text-muted">comunidade escolar</p>
+            <p className="text-[13px] font-bold text-foreground flex items-center gap-1">
+              Portal LZ
+              <svg className="w-3.5 h-3.5 text-accent" viewBox="0 0 20 20" fill="currentColor">
+                <polygon points="10,1 12.5,7 19,7 13.8,11 15.8,17 10,13.2 4.2,17 6.2,11 1,7 7.5,7" />
+              </svg>
+            </p>
+            <p className="text-[10px] text-muted">Colégio Luiz Zanchim</p>
           </div>
         </Link>
 
-        {/* Faixa larga de atalhos */}
+        {/* Faixa larga de atalhos com ícones SVG autorais */}
         <div className="flex-1 flex items-center justify-center min-w-0 px-1">
-          <div className="hidden sm:flex items-center justify-between w-full max-w-md bg-gradient-to-r from-primary-soft via-[#fdf0e6] to-secondary-soft rounded-2xl px-1.5 py-1.5 border border-border/60">
+          <div className="hidden sm:flex items-center justify-between w-full max-w-md bg-gradient-to-r from-primary-soft via-[#fdf0e6] to-secondary-soft rounded-2xl px-1.5 py-1 border border-border/70 shadow-2xs">
             {atalhos.map((a) => (
               <Link
                 key={a.href}
                 href={a.href}
-                className="flex flex-col items-center justify-center flex-1 min-w-0 py-1.5 px-1 rounded-xl hover:bg-white/90 transition-colors"
+                className="flex flex-col items-center justify-center flex-1 min-w-0 py-1.5 px-1 rounded-xl hover:bg-white/95 transition-all"
                 title={a.label}
               >
-                <span className="text-lg leading-none">{a.emoji}</span>
-                <span className="text-[10px] font-semibold text-foreground/75 mt-0.5 truncate w-full text-center">
+                <AtalhoSvg type={a.icon} color={a.color} />
+                <span className="text-[10px] font-semibold text-foreground/80 mt-0.5 truncate w-full text-center">
                   {a.label}
                 </span>
               </Link>
             ))}
           </div>
-          <div className="flex sm:hidden items-center gap-1.5 opacity-80">
+          <div className="flex sm:hidden items-center gap-1.5 opacity-85">
             <span className="w-2.5 h-2.5 rounded-full bg-primary" />
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
             <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
@@ -154,7 +201,7 @@ export default function Header() {
           {isAdmin && (
             <Link
               href="/admin"
-              className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-secondary text-white"
+              className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-secondary text-white hover:opacity-95 transition-opacity"
               onClick={() => setMenuOpen(false)}
             >
               Admin
@@ -162,7 +209,7 @@ export default function Header() {
           )}
           <button
             type="button"
-            className="inline-flex items-center gap-1 text-[12px] font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-primary-soft"
+            className="inline-flex items-center gap-1 text-[12px] font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-primary-soft transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
             aria-expanded={menuOpen}
@@ -186,7 +233,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-3 py-2.5 text-sm rounded-lg hover:bg-primary-soft hover:text-primary"
+                className="px-3 py-2.5 text-sm rounded-lg hover:bg-primary-soft hover:text-primary font-medium transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}

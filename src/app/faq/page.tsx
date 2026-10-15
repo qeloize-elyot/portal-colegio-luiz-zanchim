@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import {
+  PageHeroBanner,
+  FaqIllustration,
+  EmptyStateIllustration,
+  WaveDivider,
+} from "@/components/SvgDecorations";
 
 const faqs = [
   {
@@ -53,46 +59,49 @@ export default function FaqPage() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-primary mb-2">Perguntas Frequentes</h1>
-      <p className="text-muted mb-6">
-        Tire dúvidas sobre regimento interno, atestados, horários e procedimentos
-        administrativos.
-      </p>
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      <PageHeroBanner
+        badge="Guia Rápido do Estudante"
+        title="Perguntas Frequentes"
+        subtitle="Tire dúvidas sobre o regimento interno cívico-militar, atestados, horários de aulas e procedimentos da secretaria."
+        accentColor="#c45c26"
+        softBg="#fdf0e6"
+        illustration={<FaqIllustration />}
+      />
 
       <div className="mb-6">
         <input
           type="search"
-          placeholder="Buscar por palavra-chave..."
+          placeholder="Buscar dúvida por palavra-chave (ex: uniforme, horário, atestado)..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          className="w-full max-w-md border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full max-w-lg border border-border bg-white rounded-2xl px-4 py-3 text-sm shadow-2xs focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {filtrados.length === 0 && (
-          <p className="text-muted text-sm">Nenhum resultado encontrado.</p>
+          <EmptyStateIllustration label="Nenhuma pergunta encontrada para sua busca." />
         )}
         {filtrados.map((faq, idx) => (
           <div
             key={idx}
-            className="bg-white border border-border rounded-lg overflow-hidden"
+            className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xs"
           >
             <button
               type="button"
-              className="w-full text-left px-4 py-3 flex items-center justify-between gap-2 hover:bg-gray-50"
+              className="w-full text-left px-5 py-4 flex items-center justify-between gap-3 hover:bg-primary-soft/40 transition-colors"
               onClick={() => setAberto(aberto === idx ? null : idx)}
               aria-expanded={aberto === idx}
             >
-              <div>
-                <span className="text-xs text-primary font-medium mr-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider bg-primary-soft text-primary px-2.5 py-0.5 rounded-full">
                   {faq.categoria}
                 </span>
-                <span className="font-medium text-sm">{faq.pergunta}</span>
+                <span className="font-bold text-sm text-foreground">{faq.pergunta}</span>
               </div>
               <svg
-                className={`w-5 h-5 shrink-0 transition-transform ${aberto === idx ? "rotate-180" : ""}`}
+                className={`w-5 h-5 shrink-0 text-primary transition-transform ${aberto === idx ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -106,13 +115,15 @@ export default function FaqPage() {
               </svg>
             </button>
             {aberto === idx && (
-              <div className="px-4 pb-4 text-sm text-foreground leading-relaxed border-t border-border pt-3">
+              <div className="px-5 pb-4 text-sm text-muted leading-relaxed border-t border-border pt-3 bg-background/40">
                 {faq.resposta}
               </div>
             )}
           </div>
         ))}
       </div>
+
+      <WaveDivider color="#c45c26" />
     </div>
   );
 }

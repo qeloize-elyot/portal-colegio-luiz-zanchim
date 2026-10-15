@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HomeHeroIllustration } from "@/components/SvgDecorations";
 
 const services = [
   {
@@ -131,90 +132,74 @@ function ServiceIcon({ type }: { type: string }) {
   }
 }
 
-function IconBook() {
-  return (
-    <svg viewBox="0 0 64 64" className="w-14 h-14" aria-hidden="true">
-      <rect x="8" y="12" width="48" height="40" rx="6" fill="#c45c26" />
-      <path d="M32 12 V52" stroke="#faf6f1" strokeWidth="2" />
-      <path d="M16 24 H28" stroke="#fdf0e6" strokeWidth="3" strokeLinecap="round" />
-      <path d="M16 34 H28" stroke="#fdf0e6" strokeWidth="3" strokeLinecap="round" />
-      <path d="M36 24 H48" stroke="#fdf0e6" strokeWidth="3" strokeLinecap="round" />
-      <path d="M36 34 H48" stroke="#fdf0e6" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconStar() {
-  return (
-    <svg viewBox="0 0 64 64" className="w-12 h-12" aria-hidden="true">
-      <polygon points="32,6 38,24 58,24 42,36 48,54 32,42 16,54 22,36 6,24 26,24" fill="#e6b422" />
-    </svg>
-  );
-}
-
-function IconPeople() {
-  return (
-    <svg viewBox="0 0 80 56" className="w-16 h-12" aria-hidden="true">
-      <circle cx="22" cy="18" r="10" fill="#2f6f4e" />
-      <ellipse cx="22" cy="42" rx="16" ry="12" fill="#2f6f4e" />
-      <circle cx="58" cy="18" r="10" fill="#c45c26" />
-      <ellipse cx="58" cy="42" rx="16" ry="12" fill="#c45c26" />
-    </svg>
-  );
-}
-
 export default function Home() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 md:py-14">
       <section className="mb-14 animate-fade-in-up">
-        <div className="relative overflow-hidden rounded-3xl bg-primary-soft border border-border px-6 py-10 md:px-12 md:py-14">
-          <div className="absolute top-4 right-6 opacity-90 hidden sm:block">
-            <IconBook />
-          </div>
-          <div className="absolute bottom-4 right-24 opacity-80 hidden md:block">
-            <IconStar />
-          </div>
-          <div className="absolute -bottom-2 -left-2 opacity-70 hidden sm:block">
-            <IconPeople />
-          </div>
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-soft via-[#fdf6eb] to-secondary-soft border border-border px-6 py-10 md:px-12 md:py-12 shadow-sm">
+          {/* Ondas e círculos decorativos internos */}
+          <svg
+            className="pointer-events-none absolute -right-10 -bottom-10 w-80 h-80 opacity-20"
+            viewBox="0 0 200 200"
+            fill="none"
+          >
+            <circle cx="100" cy="100" r="90" stroke="#c45c26" strokeWidth="3" strokeDasharray="10 8" />
+            <circle cx="100" cy="100" r="65" stroke="#2f6f4e" strokeWidth="2" />
+          </svg>
 
-          <div className="relative max-w-lg">
-            <span className="inline-block text-xs font-semibold tracking-wide uppercase text-secondary mb-3 bg-secondary-soft px-3 py-1 rounded-full">
-              Portal interno
-            </span>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Um espaço feito para a nossa escola
-            </h1>
-            <p className="text-muted text-base md:text-lg leading-relaxed mb-6">
-              Materiais, informações do dia a dia, participação e um canal aberto
-              de diálogo. Tudo em um só lugar.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/materiais"
-                className="inline-flex items-center gap-2 bg-primary text-white font-medium text-sm px-5 py-2.5 rounded-xl hover:bg-primary-dark transition-colors"
-              >
-                Ver materiais
-              </Link>
-              <Link
-                href="/sugestoes"
-                className="inline-flex items-center gap-2 bg-white border border-border text-foreground font-medium text-sm px-5 py-2.5 rounded-xl hover:border-primary hover:text-primary transition-colors"
-              >
-                Enviar sugestão
-              </Link>
+          <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="max-w-lg text-center md:text-left">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wide uppercase text-secondary mb-3 bg-white/90 border border-border px-3.5 py-1 rounded-full shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-secondary" />
+                Portal Cívico-Militar · CCMPR
+              </span>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4">
+                Um espaço feito para a nossa escola
+              </h1>
+              <p className="text-muted text-base md:text-lg leading-relaxed mb-6">
+                Materiais, cardápio da cantina, grêmio estudantil, enquetes e um canal aberto
+                de diálogo. Tudo em um só lugar, com a identidade do Colégio Luiz Zanchim.
+              </p>
+              <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                <Link
+                  href="/materiais"
+                  className="inline-flex items-center gap-2 bg-primary text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-primary-dark transition-colors shadow-xs"
+                >
+                  Ver materiais
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+                <Link
+                  href="/sugestoes"
+                  className="inline-flex items-center gap-2 bg-white border border-border text-foreground font-semibold text-sm px-5 py-2.5 rounded-xl hover:border-primary hover:text-primary transition-colors"
+                >
+                  Enviar sugestão
+                </Link>
+              </div>
+            </div>
+
+            <div className="shrink-0">
+              <HomeHeroIllustration />
             </div>
           </div>
         </div>
       </section>
 
       <section className="mb-14 animate-fade-in-up" style={{ animationDelay: "0.08s" }}>
-        <div className="mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">
-            O que você pode fazer aqui
-          </h2>
-          <p className="text-muted text-sm mt-1">
-            Escolha o que precisa e navegue com facilidade
-          </p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-foreground">
+              O que você pode fazer aqui
+            </h2>
+            <p className="text-muted text-sm mt-1">
+              Escolha a área desejada e participe do dia a dia do colégio
+            </p>
+          </div>
+          <svg className="hidden sm:block w-12 h-12 svg-spin opacity-60" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="20" stroke="#c45c26" strokeWidth="2" strokeDasharray="5 5" />
+            <circle cx="24" cy="24" r="6" fill="#e6b422" />
+          </svg>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -222,10 +207,19 @@ export default function Home() {
             <Link
               key={service.href}
               href={service.href}
-              className="card-service bg-card border border-border rounded-2xl p-5 flex flex-col"
+              className="card-service relative overflow-hidden bg-card border border-border rounded-2xl p-5 flex flex-col group"
             >
+              {/* Marca d'água SVG decorativa no canto do card */}
+              <svg
+                className="pointer-events-none absolute -right-5 -bottom-5 w-24 h-24 opacity-10 group-hover:scale-110 transition-transform"
+                viewBox="0 0 80 80"
+                fill="none"
+              >
+                <circle cx="40" cy="40" r="32" stroke={service.color} strokeWidth="6" strokeDasharray="8 6" />
+              </svg>
+
               <div
-                className="w-11 h-11 rounded-xl mb-3 flex items-center justify-center text-white"
+                className="w-11 h-11 rounded-xl mb-3 flex items-center justify-center text-white shadow-xs"
                 style={{ backgroundColor: service.color }}
               >
                 <ServiceIcon type={service.icon} />
@@ -239,9 +233,9 @@ export default function Home() {
               <p className="text-sm text-muted leading-relaxed flex-1">
                 {service.description}
               </p>
-              <span className="mt-4 text-sm font-medium text-primary inline-flex items-center gap-1">
+              <span className="mt-4 text-sm font-semibold text-primary inline-flex items-center gap-1">
                 Acessar
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
@@ -254,30 +248,32 @@ export default function Home() {
         className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-fade-in-up"
         style={{ animationDelay: "0.15s" }}
       >
-        <div className="bg-secondary-soft border border-border rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-3 right-3 opacity-60">
-            <IconPeople />
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center mb-4 text-lg font-bold">
+        <div className="bg-secondary-soft border border-border rounded-3xl p-6 relative overflow-hidden">
+          <svg className="absolute -right-4 -bottom-4 w-32 h-32 opacity-25 svg-float" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="40" fill="#2f6f4e" />
+            <path d="M32 52 L45 65 L70 38" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center mb-4 text-lg font-bold shadow-xs">
             1
           </div>
           <h3 className="font-bold text-foreground mb-2">Feito para quem estuda e trabalha aqui</h3>
-          <p className="text-sm text-muted leading-relaxed relative">
-            Este portal é de uso interno. Algumas áreas pedem identificação
-            conforme o perfil de cada pessoa da comunidade escolar.
+          <p className="text-sm text-muted leading-relaxed relative max-w-md">
+            Este portal é de uso interno. O acesso com e-mail institucional garante segurança
+            conforme o perfil de cada membro da comunidade escolar.
           </p>
         </div>
-        <div className="bg-accent-soft border border-border rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-3 right-3 opacity-70">
-            <IconStar />
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-accent text-foreground flex items-center justify-center mb-4 text-lg font-bold">
+
+        <div className="bg-accent-soft border border-border rounded-3xl p-6 relative overflow-hidden">
+          <svg className="absolute -right-4 -bottom-4 w-32 h-32 opacity-30 svg-float-rev" viewBox="0 0 100 100" fill="none">
+            <polygon points="50,10 62,38 92,38 67,56 76,86 50,68 24,86 33,56 8,38 38,38" fill="#e6b422" />
+          </svg>
+          <div className="w-10 h-10 rounded-xl bg-accent text-foreground flex items-center justify-center mb-4 text-lg font-bold shadow-xs">
             2
           </div>
           <h3 className="font-bold text-foreground mb-2">Um canal de escuta de verdade</h3>
-          <p className="text-sm text-muted leading-relaxed relative">
+          <p className="text-sm text-muted leading-relaxed relative max-w-md">
             Sugestões e reclamações podem ser enviadas de forma anônima. Tudo
-            passa por moderação antes de chegar à administração.
+            passa por moderação inteligente antes de chegar à administração.
           </p>
         </div>
       </section>

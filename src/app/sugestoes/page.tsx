@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
+import {
+  PageHeroBanner,
+  SugestoesIllustration,
+  WaveDivider,
+} from "@/components/SvgDecorations";
 
 const categorias = [
   "Infraestrutura",
@@ -68,25 +73,30 @@ export default function SugestoesPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-foreground mb-2">
-        Sugestões e Reclamações
-      </h1>
-      <p className="text-muted mb-6 text-[15px] leading-relaxed">
-        Canal anônimo e moderado. Seu envio não registra identificação pessoal.
-        A equipe administrativa recebe apenas o conteúdo aprovado.
-      </p>
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <PageHeroBanner
+        badge="Canal de Escuta Seguro"
+        title="Sugestões e Reclamações"
+        subtitle="Canal 100% anônimo e moderado. Seu envio não registra identificação pessoal e ajuda a melhorar nossa escola."
+        accentColor="#2f6f4e"
+        softBg="#e8f3ec"
+        illustration={<SugestoesIllustration />}
+      />
 
       {status === "sucesso" ? (
-        <div className="bg-secondary-soft border border-border rounded-2xl p-6 text-center">
-          <p className="font-semibold text-secondary mb-2">Enviado com sucesso!</p>
-          <p className="text-sm text-muted mb-4">
-            Sua mensagem passou pela moderação e será analisada pela administração.
+        <div className="bg-secondary-soft border border-secondary/30 rounded-3xl p-8 text-center shadow-2xs">
+          <svg className="w-16 h-16 mx-auto mb-3 svg-float" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="28" fill="#2f6f4e" />
+            <path d="M20 32l8 8 16-16" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <p className="font-bold text-lg text-secondary mb-2">Enviado com sucesso!</p>
+          <p className="text-sm text-muted mb-5">
+            Sua mensagem passou pela moderação e será analisada com atenção pela administração.
           </p>
           <button
             type="button"
             onClick={() => setStatus("idle")}
-            className="text-sm text-primary font-medium underline"
+            className="text-sm bg-primary text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-dark"
           >
             Enviar outra mensagem
           </button>
@@ -94,20 +104,28 @@ export default function SugestoesPage() {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="bg-card border border-border rounded-2xl p-6 space-y-5"
+          className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xs relative overflow-hidden"
         >
+          <svg
+            className="pointer-events-none absolute -right-6 -bottom-6 w-36 h-36 opacity-10"
+            viewBox="0 0 100 100"
+            fill="none"
+          >
+            <circle cx="50" cy="50" r="40" stroke="#2f6f4e" strokeWidth="4" strokeDasharray="8 6" />
+          </svg>
+
           <div>
-            <label htmlFor="categoria" className="block text-sm font-medium mb-1.5">
-              Categoria *
+            <label htmlFor="categoria" className="block text-sm font-bold text-foreground mb-1.5">
+              Categoria da mensagem *
             </label>
             <select
               id="categoria"
               value={categoria}
               onChange={(e) => setCategoria(e.target.value)}
-              className="w-full border border-border rounded-xl px-3 py-2.5 bg-white text-sm"
+              className="w-full border border-border rounded-xl px-3.5 py-2.5 bg-background/60 text-sm"
               required
             >
-              <option value="">Selecione...</option>
+              <option value="">Selecione uma área...</option>
               {categorias.map((c) => (
                 <option key={c} value={c}>
                   {c}
@@ -117,21 +135,22 @@ export default function SugestoesPage() {
           </div>
 
           <div>
-            <label htmlFor="texto" className="block text-sm font-medium mb-1.5">
-              Sua mensagem *
+            <label htmlFor="texto" className="block text-sm font-bold text-foreground mb-1.5">
+              Sua mensagem anônima *
             </label>
             <textarea
               id="texto"
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
               rows={6}
-              className="w-full border border-border rounded-xl px-3 py-2.5 resize-y text-sm"
-              placeholder="Descreva sua sugestão ou reclamação de forma clara e respeitosa..."
+              className="w-full border border-border rounded-xl px-3.5 py-2.5 resize-y text-sm bg-background/60"
+              placeholder="Descreva sua sugestão, elogio ou reclamação de forma clara e respeitosa..."
               required
               minLength={10}
             />
-            <p className="text-xs text-muted mt-1.5">
-              Mínimo de 10 caracteres. Mensagens ofensivas são bloqueadas automaticamente.
+            <p className="text-xs text-muted mt-1.5 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-secondary inline-block" />
+              Mínimo de 10 caracteres. Mensagens ofensivas são filtradas automaticamente pela IA.
             </p>
           </div>
 
@@ -144,12 +163,14 @@ export default function SugestoesPage() {
           <button
             type="submit"
             disabled={status === "enviando"}
-            className="w-full bg-primary text-white font-medium py-2.5 rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-60"
+            className="w-full bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-60 shadow-xs"
           >
             {status === "enviando" ? "Analisando e enviando..." : "Enviar mensagem anônima"}
           </button>
         </form>
       )}
+
+      <WaveDivider color="#2f6f4e" />
     </div>
   );
 }

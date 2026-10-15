@@ -1,9 +1,9 @@
-import { BackgroundBlobs } from "@/components/SvgDecorations";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BackgroundBlobs } from "@/components/SvgDecorations";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,11 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${geistSans.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
+      <body className="min-h-full flex flex-col bg-background text-foreground antialiased relative">
+        <BackgroundBlobs />
         <Header />
-        <main className="flex-1">
-          <BackgroundBlobs />
-          {children}</main>
+        <main className="flex-1 relative z-10">{children}</main>
         <Footer />
       </body>
     </html>

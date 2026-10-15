@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import {
+  PageHeroBanner,
+  CalculadoraIllustration,
+  WaveDivider,
+} from "@/components/SvgDecorations";
 
 export default function CalculadoraPage() {
   const [nota1, setNota1] = useState("");
@@ -36,63 +41,72 @@ export default function CalculadoraPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-primary mb-2">
-        Calculadora de Notas
-      </h1>
-      <p className="text-muted mb-6 text-sm">
-        Ferramenta auxiliar. Confirme sempre as regras oficiais de cálculo de
-        média da escola com a coordenação pedagógica.
-      </p>
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <PageHeroBanner
+        badge="Planejamento de Estudos"
+        title="Calculadora de Notas"
+        subtitle="Simule suas notas trimestrais ou bimestrais e descubra quanto precisa alcançar na próxima avaliação."
+        accentColor="#c45c26"
+        softBg="#fdf6d9"
+        illustration={<CalculadoraIllustration />}
+      />
 
-      <div className="bg-white border border-border rounded-lg p-6 space-y-4">
+      <div className="max-w-xl mx-auto bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xs relative overflow-hidden">
         <div>
-          <label className="block text-sm font-medium mb-1">1ª Nota / Bimestre</label>
+          <label className="block text-sm font-bold text-foreground mb-1">
+            1ª Nota / Trimestre
+          </label>
           <input
             type="text"
             inputMode="decimal"
             value={nota1}
             onChange={(e) => setNota1(e.target.value)}
             placeholder="Ex: 7.5"
-            className="w-full border border-border rounded px-3 py-2"
+            className="w-full border border-border rounded-xl px-3.5 py-2.5 bg-background/60 text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">2ª Nota / Bimestre</label>
+          <label className="block text-sm font-bold text-foreground mb-1">
+            2ª Nota / Trimestre
+          </label>
           <input
             type="text"
             inputMode="decimal"
             value={nota2}
             onChange={(e) => setNota2(e.target.value)}
             placeholder="Ex: 6.0"
-            className="w-full border border-border rounded px-3 py-2"
+            className="w-full border border-border rounded-xl px-3.5 py-2.5 bg-background/60 text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Média necessária</label>
+          <label className="block text-sm font-bold text-foreground mb-1">
+            Média necessária
+          </label>
           <input
             type="text"
             inputMode="decimal"
             value={mediaNecessaria}
             onChange={(e) => setMediaNecessaria(e.target.value)}
-            className="w-full border border-border rounded px-3 py-2"
+            className="w-full border border-border rounded-xl px-3.5 py-2.5 bg-background/60 text-sm"
           />
         </div>
 
         <button
           type="button"
           onClick={calcular}
-          className="w-full bg-primary text-white font-medium py-2.5 rounded hover:bg-primary-dark transition-colors"
+          className="w-full bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-dark transition-colors shadow-xs"
         >
-          Calcular
+          Calcular nota necessária
         </button>
 
         {resultado && (
-          <div className="bg-blue-50 border border-blue-200 rounded px-4 py-3 text-sm">
+          <div className="bg-secondary-soft border border-secondary/30 text-secondary rounded-2xl px-4 py-3.5 text-sm font-medium">
             {resultado}
           </div>
         )}
       </div>
+
+      <WaveDivider color="#e6b422" />
     </div>
   );
 }
