@@ -12,7 +12,7 @@ type Enquete = {
 };
 
 export default function EnquetesPage() {
-  const { isAdmin, role, userId, loading: roleLoading } = useRole();
+  const { isAdmin, userId, loading: roleLoading } = useRole();
   const [lista, setLista] = useState<Enquete[]>([]);
   const [votados, setVotados] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -77,7 +77,7 @@ export default function EnquetesPage() {
     });
     setEnviando(false);
     if (error) {
-      setErro(error.message + " — rode o FIX_EDICAO.sql no Supabase.");
+      setErro(error.message);
       return;
     }
     setPergunta("");
@@ -104,21 +104,9 @@ export default function EnquetesPage() {
         <span className="text-4xl">🗳️</span>
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-1">Enquetes</h1>
-          <p className="text-muted text-sm">
-            Participe das votações da escola.
-            {isAdmin ? " Como admin, use o formulário abaixo para criar." : ""}
-          </p>
-          <p className="text-xs text-muted mt-1">
-            Seu perfil: <b>{role || "?"}</b>
-          </p>
+          <p className="text-muted text-sm">Participe das votações da escola.</p>
         </div>
       </div>
-
-      {!roleLoading && !isAdmin && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-3 rounded-xl mb-4">
-          Criar enquete é só para <b>Admin</b>. Seu perfil: <b>{role || "?"}</b>. Você ainda pode votar nas ativas.
-        </div>
-      )}
 
       {isAdmin && (
         <form onSubmit={criar} className="bg-card border border-border rounded-2xl p-5 mb-8 space-y-3">
@@ -159,7 +147,6 @@ export default function EnquetesPage() {
         <div className="border border-dashed border-border rounded-2xl p-8 text-center text-muted text-sm">
           <p className="text-3xl mb-2">🗳️</p>
           Nenhuma enquete ativa.
-          {isAdmin ? " Crie a primeira no formulário acima." : ""}
         </div>
       ) : (
         <div className="space-y-5">
