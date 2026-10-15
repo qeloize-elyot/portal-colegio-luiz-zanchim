@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabase/client";
 
 const categorias = [
   "Infraestrutura",
@@ -27,7 +28,7 @@ export default function SugestoesPage() {
     setMensagemErro("");
 
     try {
-      // Chama a API de moderação com Gemini
+      // 1. Moderação com Gemini
       const res = await fetch("/api/moderar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,38 +46,50 @@ export default function SugestoesPage() {
         return;
       }
 
-      // Se passou na moderação → sucesso
-      // (no futuro aqui você salvaria no banco de dados)
+      // 2. Salvar no banco (sem identificação do usuário)
+      const { error } = await supabase.from("feedbacks").insert({
+        categoria,
+        texto: texto.trim(),
+        status: "PENDENTE",
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
       setStatus("sucesso");
       setTexto("");
       setCategoria("");
     } catch (err) {
       setStatus("erro");
-      setMensagemErro("Erro ao enviar. Tente novamente em alguns instantes.");
+      setMensagemErro(
+        err instanceof Error
+          ? err.message
+          : "Erro ao enviar. Tente novamente em alguns instantes."
+      );
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-primary mb-2">
+    <div className="max-w-2xl mx-auto px-4 py-10">
+      <h1 className="text-2xl font-bold text-foreground mb-2">
         Sugestões e Reclamações
       </h1>
-      <p className="text-muted mb-6">
-        Canal anônimo e moderado por inteligência artificial. Seu envio não
-        registra identificação pessoal. A equipe administrativa receberá apenas
-        o conteúdo aprovado.
+      <p className="text-muted mb-6 text-[15px] leading-relaxed">
+        Canal anônimo e moderado. Seu envio não registra identificação pessoal.
+        A equipe administrativa recebe apenas o conteúdo aprovado.
       </p>
 
       {status === "sucesso" ? (
-        <div className="bg-accent-light border border-green-300 rounded-lg p-6 text-center">
-          <p className="font-medium text-accent mb-2">Enviado com sucesso!</p>
-          <p className="text-sm text-gray-700 mb-4">
+        <div className="bg-secondary-soft border border-border rounded-2xl p-6 text-center">
+          <p className="font-semibold text-secondary mb-2">Enviado com sucesso!</p>
+          <p className="text-sm text-muted mb-4">
             Sua mensagem passou pela moderação e será analisada pela administração.
           </p>
           <button
             type="button"
             onClick={() => setStatus("idle")}
-            className="text-sm text-primary underline"
+            className="text-sm text-primary font-medium underline"
           >
             Enviar outra mensagem
           </button>
@@ -84,17 +97,17 @@ export default function SugestoesPage() {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="bg-white border border-border rounded-lg p-6 space-y-5"
+          className="bg-card border border-border rounded-2xl p-6 space-y-5"
         >
           <div>
-            <label htmlFor="categoria" className="block text-sm font-medium mb-1">
+            <label htmlFor="categoria" className="block text-sm font-medium mb-1.5">
               Categoria *
             </label>
             <select
               id="categoria"
               value={categoria}
               onChange={(e) => setCategoria(e.target.value)}
-              className="w-full border border-border rounded px-3 py-2 bg-white"
+              className="w-full border border-border rounded-xl px-3 py-2.5 bg-white text-sm"
               required
             >
               <option value="">Selecione...</option>
@@ -107,7 +120,7 @@ export default function SugestoesPage() {
           </div>
 
           <div>
-            <label htmlFor="texto" className="block text-sm font-medium mb-1">
+            <label htmlFor="texto" className="block text-sm font-medium mb-1.5">
               Sua mensagem *
             </label>
             <textarea
@@ -115,19 +128,18 @@ export default function SugestoesPage() {
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
               rows={6}
-              className="w-full border border-border rounded px-3 py-2 resize-y"
+              className="w-full border border-border rounded-xl px-3 py-2.5 resize-y text-sm"
               placeholder="Descreva sua sugestão ou reclamação de forma clara e respeitosa..."
               required
               minLength={10}
             />
-            <p className="text-xs text-muted mt-1">
-              Mínimo de 10 caracteres. Mensagens ofensivas serão bloqueadas
-              automaticamente pela inteligência artificial.
+            <p className="text-xs text-muted mt-1.5">
+              Mínimo de 10 caracteres. Mensagens ofensivas são bloqueadas automaticamente.
             </p>
           </div>
 
           {status === "erro" && (
-            <div className="bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 rounded">
+            <div className="bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 rounded-xl">
               {mensagemErro}
             </div>
           )}
@@ -135,7 +147,7 @@ export default function SugestoesPage() {
           <button
             type="submit"
             disabled={status === "enviando"}
-            className="w-full bg-primary text-white font-medium py-2.5 rounded hover:bg-primary-dark transition-colors disabled:opacity-60"
+            className="w-full bg-primary text-white font-medium py-2.5 rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-60"
           >
             {status === "enviando" ? "Analisando e enviando..." : "Enviar mensagem anônima"}
           </button>
