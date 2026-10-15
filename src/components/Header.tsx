@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getSupabase } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/", label: "Início" },
@@ -16,8 +18,58 @@ const navItems = [
 ];
 
 export default function Header() {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    async function checkUser() {
+      try {
+        const supabase = getSupabase();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          setUserEmail(user.email ?? null);
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .single();
+          setIsAdmin(profile?.role === "ADMIN");
+        } else {
+          setUserEmail(null);
+          setIsAdmin(false);
+        }
+      } catch {
+        setUserEmail(null);
+        setIsAdmin(false);
+      }
+    }
+
+    checkUser();
+
+    const supabase = getSupabase();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      checkUser();
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function handleLogout() {
+    const supabase = getSupabase();
+    await supabase.auth.signOut();
+    setUserEmail(null);
+    setIsAdmin(false);
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50 shadow-sm">
@@ -50,23 +102,55 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="px-3 py-2 rounded-lg text-secondary font-semibold hover:bg-secondary-soft transition-colors"
+            >
+              Admin
+            </Link>
+          )}
         </nav>
 
-        <button
-          type="button"
-          className="lg:hidden p-2 rounded-lg hover:bg-primary-soft text-foreground transition-colors"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={menuOpen}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+        <div className="flex items-center gap-2">
+          {userEmail ? (
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="text-xs text-muted max-w-[140px] truncate" title={userEmail}>
+                {userEmail}
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border hover:border-primary hover:text-primary transition-colors"
+              >
+                Sair
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-primary text-white hover:bg-primary-dark transition-colors"
+            >
+              Entrar
+            </Link>
+          )}
+
+          <button
+            type="button"
+            className="lg:hidden p-2 rounded-lg hover:bg-primary-soft text-foreground transition-colors"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={menuOpen}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {menuOpen && (
@@ -82,6 +166,35 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="px-3 py-2.5 rounded-lg text-sm font-semibold text-secondary hover:bg-white transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                Admin
+              </Link>
+            )}
+            {userEmail ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
+                className="px-3 py-2.5 rounded-lg text-sm font-medium text-left hover:bg-white transition-colors"
+              >
+                Sair ({userEmail})
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="px-3 py-2.5 rounded-lg text-sm font-semibold text-primary hover:bg-white transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                Entrar / Criar conta
+              </Link>
+            )}
           </div>
         </nav>
       )}
