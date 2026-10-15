@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
+import { useRole } from "@/lib/useRole";
 
 type Post = {
   id: string;
@@ -11,35 +12,27 @@ type Post = {
 };
 
 export default function GremioPage() {
+  const { isProfessor, isAdmin, role, userId, loading: roleLoading } = useRole();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [podePublicar, setPodePublicar] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
   const [titulo, setTitulo] = useState("");
   const [conteudo, setConteudo] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const podePublicar = isProfessor || isAdmin;
+
   async function carregar() {
-    const supabase = getSupabase();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      setUserId(user.id);
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .maybeSingle();
-      setPodePublicar(profile?.role === "ADMIN" || profile?.role === "PROFESSOR");
+    try {
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from("gremio_posts")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error) setPosts(data || []);
+    } finally {
+      setLoading(false);
     }
-    const { data } = await supabase
-      .from("gremio_posts")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setPosts(data || []);
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -48,7 +41,10 @@ export default function GremioPage() {
 
   async function publicar(e: React.FormEvent) {
     e.preventDefault();
-    if (!userId) return;
+    if (!userId) {
+      setErro("Faça login novamente.");
+      return;
+    }
     setEnviando(true);
     setErro("");
     const supabase = getSupabase();
@@ -59,7 +55,7 @@ export default function GremioPage() {
     });
     setEnviando(false);
     if (error) {
-      setErro(error.message);
+      setErro(error.message + " — rode o FIX_EDICAO.sql no Supabase se a tabela não existir.");
       return;
     }
     setTitulo("");
@@ -69,10 +65,22 @@ export default function GremioPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-foreground mb-2">Painel do Grêmio</h1>
-      <p className="text-muted mb-6 text-sm">
-        Comunicados, eventos e novidades da comunidade estudantil.
-      </p>
+      <div className="flex items-start gap-3 mb-6">
+        <span className="text-4xl">📣</span>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Painel do Grêmio</h1>
+          <p className="text-muted text-sm">Comunicados e novidades da comunidade estudantil.</p>
+          <p className="text-xs text-muted mt-1">
+            Seu perfil: <b>{role || "?"}</b>
+          </p>
+        </div>
+      </div>
+
+      {!roleLoading && !podePublicar && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-3 rounded-xl mb-4">
+          Publicar no Grêmio é para <b>Professor</b> ou <b>Admin</b>. Seu perfil: <b>{role || "?"}</b>.
+        </div>
+      )}
 
       {podePublicar && (
         <form onSubmit={publicar} className="bg-card border border-border rounded-2xl p-5 mb-8 space-y-3">
@@ -88,8 +96,8 @@ export default function GremioPage() {
             required
             value={conteudo}
             onChange={(e) => setConteudo(e.target.value)}
-            rows={3}
-            placeholder="Conteúdo"
+            rows={4}
+            placeholder="Escreva o comunicado... Pode colar também um link de foto."
             className="w-full border border-border rounded-xl px-3 py-2 text-sm"
           />
           {erro && <p className="text-sm text-red-700">{erro}</p>}
@@ -107,6 +115,7 @@ export default function GremioPage() {
         <p className="text-muted text-sm">Carregando...</p>
       ) : posts.length === 0 ? (
         <div className="border border-dashed border-border rounded-2xl p-8 text-center text-muted text-sm">
+          <p className="text-3xl mb-2">📌</p>
           Nenhuma publicação ainda.
         </div>
       ) : (
