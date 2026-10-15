@@ -36,7 +36,6 @@ export default function LoginPage() {
           password: senha,
         });
         if (error) throw error;
-        // reload completo para o middleware reconhecer a sessao
         window.location.href = "/";
         return;
       }
@@ -58,7 +57,7 @@ export default function LoginPage() {
         return;
       }
 
-      alert("Conta criada! Agora faca login com o mesmo e-mail e senha.");
+      alert("Conta criada! Agora faça login com o mesmo e-mail e senha.");
       setModo("login");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro ao autenticar.";
@@ -120,8 +119,8 @@ export default function LoginPage() {
               Portal da nossa comunidade escolar
             </h2>
             <p className="mt-3 text-white/85 text-[15px] leading-relaxed">
-              Materiais, cardapio, gremio, enquetes e um canal de escuta. Espaco
-              seguro so para quem faz parte da escola.
+              Materiais, cardápio, grêmio, enquetes e um canal de escuta. Espaço
+              seguro só para quem faz parte da escola.
             </p>
             <svg viewBox="0 0 200 120" className="w-full max-w-[200px] mx-auto mt-10" aria-hidden="true">
               <circle cx="60" cy="40" r="18" fill="#2f6f4e" />
@@ -140,7 +139,7 @@ export default function LoginPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#c45c26] text-white text-xl font-bold mb-3">
                 LZ
               </div>
-              <p className="text-sm text-[#6b5b4b]">Colegio Civico-Militar - Parana</p>
+              <p className="text-sm text-[#6b5b4b]">Colégio Cívico-Militar · Paraná</p>
             </div>
 
             <div className="bg-white border border-[#e8d5c4] rounded-3xl p-7 sm:p-8 shadow-sm">
@@ -164,7 +163,7 @@ export default function LoginPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-[#2c2416] mb-1">
-                        Voce e
+                        Você é
                       </label>
                       <select
                         value={role}
@@ -173,7 +172,7 @@ export default function LoginPage() {
                       >
                         <option value="ALUNO">Aluno</option>
                         <option value="PROFESSOR">Professor</option>
-                        <option value="ADMIN">Administracao / Direcao</option>
+                        <option value="ADMIN">Administração / Direção</option>
                       </select>
                     </div>
                   </div>
@@ -223,7 +222,7 @@ export default function LoginPage() {
               <p className="text-sm text-center text-[#6b5b4b] mt-6">
                 {modo === "login" ? (
                   <span>
-                    Ainda nao tem conta?{" "}
+                    Ainda não tem conta?{" "}
                     <button
                       type="button"
                       onClick={irParaCadastro}
@@ -234,7 +233,7 @@ export default function LoginPage() {
                   </span>
                 ) : (
                   <span>
-                    Ja tem conta?{" "}
+                    Já tem conta?{" "}
                     <button
                       type="button"
                       onClick={irParaLogin}
@@ -248,7 +247,7 @@ export default function LoginPage() {
             </div>
 
             <p className="text-center text-[11px] text-[#6b5b4b]/80 mt-6">
-              Colegio Estadual Civico-Militar Vereador Luiz Zanchim
+              Colégio Estadual Cívico-Militar Vereador Luiz Zanchim
             </p>
           </div>
         </div>
