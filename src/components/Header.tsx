@@ -20,40 +20,24 @@ export default function Header() {
   const [logoError, setLogoError] = useState(false);
 
   return (
-    <header className="bg-white border-b border-border sticky top-0 z-50">
-      {/* Faixa superior institucional */}
-      <div className="bg-secondary text-white text-[11px] py-1.5">
-        <div className="max-w-5xl mx-auto px-4 flex justify-between items-center">
-          <span>Colégio Estadual Cívico-Militar · Paraná</span>
-          <span className="hidden sm:inline opacity-90">Portal da Comunidade Escolar</span>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3 shrink-0 group">
+    <header className="bg-white border-b border-border sticky top-0 z-50 shadow-sm">
+      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <Link href="/" className="flex items-center shrink-0 group">
           {!logoError ? (
             <Image
               src="/logo.png"
-              alt="Brasão do Colégio Estadual Cívico-Militar Vereador Luiz Zanchim"
-              width={50}
-              height={50}
-              className="rounded-full bg-primary-soft p-[2px] transition-transform duration-300 group-hover:scale-105"
+              alt="Logo do Colégio Cívico-Militar do Paraná"
+              width={56}
+              height={56}
+              className="rounded-full transition-transform duration-300 group-hover:scale-105"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-[50px] h-[50px] rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-sm">
-              LZ
+            <div className="w-[56px] h-[56px] rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">
+              CCMPR
             </div>
           )}
-          <div className="leading-snug">
-            <p className="font-bold text-[14px] md:text-[15px] text-foreground">
-              Colégio Cívico-Militar
-            </p>
-            <p className="text-[12px] md:text-[13px] text-muted">
-              Vereador Luiz Zanchim
-            </p>
-          </div>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1 text-[13px] font-medium">
@@ -86,7 +70,7 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <nav className="lg:hidden border-t border-border bg-primary-soft/50 animate-soft-pop">
+        <nav className="lg:hidden border-t border-border bg-primary-soft/40 animate-soft-pop">
           <div className="max-w-5xl mx-auto px-4 py-2 flex flex-col">
             {navItems.map((item) => (
               <Link
