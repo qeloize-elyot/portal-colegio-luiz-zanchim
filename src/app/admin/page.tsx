@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabase } from "@/lib/supabase/client";
 
 type Feedback = {
   id: string;
@@ -22,46 +22,54 @@ export default function AdminPage() {
 
   useEffect(() => {
     async function carregar() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const supabase = getSupabase();
 
-      if (!user) {
-        router.push("/login");
-        return;
-      }
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+        if (!user) {
+          router.push("/login");
+          return;
+        }
 
-      if (!profile || profile.role !== "ADMIN") {
-        setErro("Acesso restrito à administração.");
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+        if (!profile || profile.role !== "ADMIN") {
+          setErro("Acesso restrito à administração.");
+          setLoading(false);
+          return;
+        }
+
+        setAutorizado(true);
+
+        const { data, error } = await supabase
+          .from("feedbacks")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          setErro(error.message);
+        } else {
+          setFeedbacks(data || []);
+        }
+      } catch (e) {
+        setErro(e instanceof Error ? e.message : "Erro ao carregar.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      setAutorizado(true);
-
-      const { data, error } = await supabase
-        .from("feedbacks")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        setErro(error.message);
-      } else {
-        setFeedbacks(data || []);
-      }
-      setLoading(false);
     }
 
     carregar();
   }, [router]);
 
   async function atualizarStatus(id: string, status: string) {
+    const supabase = getSupabase();
     const { error } = await supabase
       .from("feedbacks")
       .update({ status })
