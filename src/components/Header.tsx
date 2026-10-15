@@ -11,7 +11,7 @@ const navItems = [
   { href: "/gremio", label: "Grêmio" },
   { href: "/enquetes", label: "Enquetes" },
   { href: "/feira", label: "Feira de Trocas" },
-  { href: "/faq", label: "Perguntas Frequentes" },
+  { href: "/faq", label: "Dúvidas" },
   { href: "/sugestoes", label: "Sugestões" },
 ];
 
@@ -20,60 +20,57 @@ export default function Header() {
   const [logoError, setLogoError] = useState(false);
 
   return (
-    <header className="bg-primary text-white shadow-md">
-      {/* Barra superior */}
-      <div className="bg-primary-dark text-[11px] py-1.5 tracking-wide">
+    <header className="bg-white border-b border-border sticky top-0 z-50">
+      {/* Faixa superior institucional */}
+      <div className="bg-secondary text-white text-[11px] py-1.5">
         <div className="max-w-5xl mx-auto px-4 flex justify-between items-center">
-          <span>Colégio Estadual Cívico-Militar Vereador Luiz Zanchim</span>
+          <span>Colégio Estadual Cívico-Militar · Paraná</span>
           <span className="hidden sm:inline opacity-90">Portal da Comunidade Escolar</span>
         </div>
       </div>
 
-      {/* Cabeçalho principal */}
-      <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3.5 shrink-0 group">
+      <div className="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-3 shrink-0 group">
           {!logoError ? (
             <Image
               src="/logo.png"
               alt="Brasão do Colégio Estadual Cívico-Militar Vereador Luiz Zanchim"
-              width={54}
-              height={54}
-              className="rounded-full bg-white p-[2px] shadow-sm transition-transform duration-300 group-hover:scale-105"
+              width={50}
+              height={50}
+              className="rounded-full bg-primary-soft p-[2px] transition-transform duration-300 group-hover:scale-105"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-[54px] h-[54px] rounded-full bg-accent flex items-center justify-center text-primary-dark text-sm font-bold shadow-sm">
+            <div className="w-[50px] h-[50px] rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-sm">
               LZ
             </div>
           )}
-          <div className="leading-tight">
-            <p className="font-semibold text-sm md:text-[15px]">
-              Colégio Estadual Cívico-Militar
+          <div className="leading-snug">
+            <p className="font-bold text-[14px] md:text-[15px] text-foreground">
+              Colégio Cívico-Militar
             </p>
-            <p className="text-xs md:text-sm text-white/85">
+            <p className="text-[12px] md:text-[13px] text-muted">
               Vereador Luiz Zanchim
             </p>
           </div>
         </Link>
 
-        {/* Navegação desktop */}
-        <nav className="hidden lg:flex items-center gap-0.5 text-[13px]">
+        <nav className="hidden lg:flex items-center gap-1 text-[13px] font-medium">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="px-2.5 py-1.5 rounded-md hover:bg-white/15 transition-colors duration-200"
+              className="px-3 py-2 rounded-lg text-foreground/80 hover:text-primary hover:bg-primary-soft transition-colors duration-200"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        {/* Botão menu mobile */}
         <button
           type="button"
-          className="lg:hidden p-2 rounded-md hover:bg-white/15 transition-colors"
+          className="lg:hidden p-2 rounded-lg hover:bg-primary-soft text-foreground transition-colors"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
           aria-expanded={menuOpen}
@@ -88,15 +85,14 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Menu mobile */}
       {menuOpen && (
-        <nav className="lg:hidden border-t border-white/15 bg-primary-dark animate-fade-in">
+        <nav className="lg:hidden border-t border-border bg-primary-soft/50 animate-soft-pop">
           <div className="max-w-5xl mx-auto px-4 py-2 flex flex-col">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-3 py-2.5 rounded-md hover:bg-white/10 text-sm transition-colors"
+                className="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
