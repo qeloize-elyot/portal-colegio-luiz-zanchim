@@ -20,38 +20,38 @@ export default function Header() {
   const [logoError, setLogoError] = useState(false);
 
   return (
-    <header className="bg-primary text-white">
+    <header className="bg-primary text-white shadow-md">
       {/* Barra superior */}
       <div className="bg-primary-dark text-[11px] py-1.5 tracking-wide">
         <div className="max-w-5xl mx-auto px-4 flex justify-between items-center">
-          <span>Governo do Estado do Paraná · Educação</span>
-          <span className="hidden sm:inline">Portal Interno da Unidade Escolar</span>
+          <span>Colégio Estadual Cívico-Militar Vereador Luiz Zanchim</span>
+          <span className="hidden sm:inline opacity-90">Portal da Comunidade Escolar</span>
         </div>
       </div>
 
       {/* Cabeçalho principal */}
       <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3.5 shrink-0">
+        <Link href="/" className="flex items-center gap-3.5 shrink-0 group">
           {!logoError ? (
             <Image
               src="/logo.png"
               alt="Brasão do Colégio Estadual Cívico-Militar Vereador Luiz Zanchim"
-              width={52}
-              height={52}
-              className="rounded-full bg-white p-[2px]"
+              width={54}
+              height={54}
+              className="rounded-full bg-white p-[2px] shadow-sm transition-transform duration-300 group-hover:scale-105"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-[52px] h-[52px] rounded-full bg-white/15 border border-white/30 flex items-center justify-center text-xs font-bold leading-tight text-center">
-              C.M.
+            <div className="w-[54px] h-[54px] rounded-full bg-accent flex items-center justify-center text-primary-dark text-sm font-bold shadow-sm">
+              LZ
             </div>
           )}
           <div className="leading-tight">
             <p className="font-semibold text-sm md:text-[15px]">
               Colégio Estadual Cívico-Militar
             </p>
-            <p className="text-xs md:text-sm text-blue-100/90">
+            <p className="text-xs md:text-sm text-white/85">
               Vereador Luiz Zanchim
             </p>
           </div>
@@ -63,7 +63,7 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className="px-2.5 py-1.5 rounded hover:bg-white/10 transition-colors"
+              className="px-2.5 py-1.5 rounded-md hover:bg-white/15 transition-colors duration-200"
             >
               {item.label}
             </Link>
@@ -73,7 +73,7 @@ export default function Header() {
         {/* Botão menu mobile */}
         <button
           type="button"
-          className="lg:hidden p-2 rounded hover:bg-white/10"
+          className="lg:hidden p-2 rounded-md hover:bg-white/15 transition-colors"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
           aria-expanded={menuOpen}
@@ -90,13 +90,13 @@ export default function Header() {
 
       {/* Menu mobile */}
       {menuOpen && (
-        <nav className="lg:hidden border-t border-white/15 bg-primary-dark">
+        <nav className="lg:hidden border-t border-white/15 bg-primary-dark animate-fade-in">
           <div className="max-w-5xl mx-auto px-4 py-2 flex flex-col">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-3 py-2.5 rounded hover:bg-white/10 text-sm"
+                className="px-3 py-2.5 rounded-md hover:bg-white/10 text-sm transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
