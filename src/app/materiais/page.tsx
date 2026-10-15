@@ -17,7 +17,7 @@ type Material = {
 };
 
 export default function MateriaisPage() {
-  const { isProfessor, role, userId, loading: roleLoading } = useRole();
+  const { isProfessor, userId } = useRole();
   const [materiais, setMateriais] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
@@ -100,21 +100,12 @@ export default function MateriaisPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-1">Materiais de Apoio</h1>
           <p className="text-muted text-sm">Links, textos, PDFs e imagens (via link).</p>
-          <p className="text-xs text-muted mt-1">
-            Seu perfil: <b>{role || "?"}</b>
-          </p>
         </div>
       </div>
 
-      {!roleLoading && !isProfessor && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-3 rounded-xl mb-4">
-          Publicar material é para <b>Professor</b> ou <b>Admin</b>. Seu perfil: <b>{role || "?"}</b>.
-        </div>
-      )}
-
       {isProfessor && (
         <form onSubmit={publicar} className="bg-card border border-border rounded-2xl p-6 mb-8 space-y-4">
-          <h2 className="font-bold">✏️ Publicar material</h2>
+          <h2 className="font-bold">Publicar material</h2>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
               <label className="block text-sm font-medium mb-1">Ano</label>
