@@ -17,6 +17,14 @@ const navItems = [
   { href: "/sugestoes", label: "Sugestões" },
 ];
 
+const atalhos = [
+  { href: "/materiais", label: "Materiais", emoji: "📚" },
+  { href: "/cardapio", label: "Cantina", emoji: "🍎" },
+  { href: "/gremio", label: "Grêmio", emoji: "📣" },
+  { href: "/feira", label: "Feira", emoji: "🔄" },
+  { href: "/sugestoes", label: "Ouvidoria", emoji: "💬" },
+];
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
@@ -90,63 +98,76 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-4 h-[68px] flex items-center justify-between gap-3">
-        {/* Logo + identidade */}
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 h-[72px] flex items-center gap-2 sm:gap-3">
+        {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 min-w-0 group"
+          className="flex items-center gap-2.5 shrink-0 group"
           onClick={() => setMenuOpen(false)}
         >
           {!logoError ? (
             <Image
               src="/logo.png"
               alt="Logo do colégio"
-              width={52}
-              height={52}
-              className="rounded-full shrink-0 ring-2 ring-primary/15 group-hover:ring-primary/40 transition-all"
+              width={54}
+              height={54}
+              className="rounded-full ring-2 ring-primary/20 group-hover:ring-primary/45 transition-all"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-[52px] h-[52px] rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="w-[54px] h-[54px] rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">
               LZ
             </div>
           )}
-
-          <div className="min-w-0 hidden sm:block">
-            <p className="text-[13px] font-bold text-foreground leading-tight truncate">
-              Portal LZ
-            </p>
-            <p className="text-[11px] text-muted leading-tight truncate">
-              comunidade escolar
-            </p>
-            {/* detalhe criativo */}
-            <div className="flex items-center gap-1 mt-1">
-              <span className="w-2 h-2 rounded-full bg-primary" />
-              <span className="w-2 h-2 rounded-full bg-secondary" />
-              <span className="w-2 h-2 rounded-full bg-accent" />
-              <span className="h-[2px] w-8 rounded-full bg-gradient-to-r from-primary via-accent to-secondary ml-0.5" />
-            </div>
+          <div className="hidden md:block leading-tight">
+            <p className="text-[13px] font-bold text-foreground">Portal LZ</p>
+            <p className="text-[10px] text-muted">comunidade escolar</p>
           </div>
         </Link>
 
+        {/* Faixa criativa no meio — atalhos com ícones */}
+        <div className="flex-1 flex items-center justify-center min-w-0">
+          <div className="hidden sm:flex items-center gap-1 bg-gradient-to-r from-primary-soft via-[#fdf0e6] to-secondary-soft rounded-2xl px-2 py-1.5 border border-border/60">
+            {atalhos.map((a) => (
+              <Link
+                key={a.href}
+                href={a.href}
+                className="flex flex-col items-center justify-center w-[52px] py-1 rounded-xl hover:bg-white/80 transition-colors"
+                title={a.label}
+              >
+                <span className="text-base leading-none">{a.emoji}</span>
+                <span className="text-[9px] font-medium text-foreground/70 mt-0.5 truncate max-w-full">
+                  {a.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+          {/* mobile: bolinhas decorativas */}
+          <div className="flex sm:hidden items-center gap-1.5 opacity-80">
+            <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+            <span className="w-2.5 h-2.5 rounded-full bg-accent" />
+            <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
+            <span className="h-[3px] w-10 rounded-full bg-gradient-to-r from-primary to-secondary" />
+          </div>
+        </div>
+
         {/* Direita */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           {isAdmin && (
             <Link
               href="/admin"
-              className="text-[12px] font-semibold px-3 py-1.5 rounded-lg bg-secondary text-white hover:opacity-90"
+              className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-secondary text-white"
               onClick={() => setMenuOpen(false)}
             >
               Admin
             </Link>
           )}
-
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-primary-soft transition-colors"
+            className="inline-flex items-center gap-1 text-[12px] font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-primary-soft"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-label="Menu"
             aria-expanded={menuOpen}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,7 +189,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-3 py-2.5 text-sm rounded-lg text-foreground/80 hover:bg-primary-soft hover:text-primary transition-colors"
+                className="px-3 py-2.5 text-sm rounded-lg hover:bg-primary-soft hover:text-primary"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
