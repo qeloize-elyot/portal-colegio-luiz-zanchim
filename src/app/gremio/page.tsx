@@ -12,7 +12,7 @@ type Post = {
 };
 
 export default function GremioPage() {
-  const { isProfessor, isAdmin, role, userId, loading: roleLoading } = useRole();
+  const { isProfessor, isAdmin, userId } = useRole();
   const [posts, setPosts] = useState<Post[]>([]);
   const [titulo, setTitulo] = useState("");
   const [conteudo, setConteudo] = useState("");
@@ -55,7 +55,7 @@ export default function GremioPage() {
     });
     setEnviando(false);
     if (error) {
-      setErro(error.message + " — rode o FIX_EDICAO.sql no Supabase se a tabela não existir.");
+      setErro(error.message);
       return;
     }
     setTitulo("");
@@ -70,17 +70,8 @@ export default function GremioPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-1">Painel do Grêmio</h1>
           <p className="text-muted text-sm">Comunicados e novidades da comunidade estudantil.</p>
-          <p className="text-xs text-muted mt-1">
-            Seu perfil: <b>{role || "?"}</b>
-          </p>
         </div>
       </div>
-
-      {!roleLoading && !podePublicar && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-3 rounded-xl mb-4">
-          Publicar no Grêmio é para <b>Professor</b> ou <b>Admin</b>. Seu perfil: <b>{role || "?"}</b>.
-        </div>
-      )}
 
       {podePublicar && (
         <form onSubmit={publicar} className="bg-card border border-border rounded-2xl p-5 mb-8 space-y-3">
