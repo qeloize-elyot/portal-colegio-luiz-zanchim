@@ -1,7 +1,17 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Esconde o rodapé na tela de login para nunca sobrepor os textos
+  if (pathname?.startsWith("/login")) {
+    return null;
+  }
+
   return (
     <footer className="relative bg-secondary text-white mt-auto overflow-hidden">
-      {/* Onda superior sutil integrada ao rodapé */}
       <div className="w-full overflow-hidden leading-none bg-background">
         <svg className="relative block w-full h-8 sm:h-11" viewBox="0 0 1200 120" preserveAspectRatio="none">
           <path
@@ -11,7 +21,6 @@ export default function Footer() {
         </svg>
       </div>
 
-      {/* Brasão / Estrela Decorativa de Fundo */}
       <svg
         className="pointer-events-none absolute -right-12 -bottom-12 w-64 h-64 opacity-10"
         viewBox="0 0 200 200"
@@ -49,7 +58,7 @@ export default function Footer() {
               Sobre este espaço
             </h3>
             <p className="text-white/90 leading-relaxed text-[13px]">
-              Portal de uso exclusivo da comunidade escolar.
+              Portal Escolar de uso exclusivo da comunidade escolar.
               Criado para facilitar o dia a dia, os estudos e o diálogo.
             </p>
           </div>

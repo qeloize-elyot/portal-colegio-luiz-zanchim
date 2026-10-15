@@ -105,8 +105,8 @@ export default function MateriaisPage() {
         badge="Acervo Pedagógico"
         title="Materiais de Apoio"
         subtitle="Acesse apostilas, listas de exercícios, slides, PDFs e links organizados por série, turma e disciplina."
-        accentColor="#c45c26"
-        softBg="#fdf0e6"
+        accentColor="#1e3a8a"
+        softBg="#eef4ff"
         illustration={<MateriaisIllustration />}
       />
 

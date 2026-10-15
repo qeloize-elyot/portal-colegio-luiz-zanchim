@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
 
@@ -18,11 +19,11 @@ const navItems = [
 ];
 
 const atalhos = [
-  { href: "/materiais", label: "Materiais", icon: "book", color: "#c45c26" },
-  { href: "/cardapio", label: "Cantina", icon: "apple", color: "#2f6f4e" },
-  { href: "/gremio", label: "Grêmio", icon: "megaphone", color: "#e6b422" },
+  { href: "/materiais", label: "Materiais", icon: "book", color: "#1e3a8a" },
+  { href: "/cardapio", label: "Cantina", icon: "apple", color: "#c45c26" },
+  { href: "/gremio", label: "Grêmio", icon: "megaphone", color: "#d97706" },
   { href: "/feira", label: "Feira", icon: "swap", color: "#2f6f4e" },
-  { href: "/sugestoes", label: "Ouvidoria", icon: "chat", color: "#c45c26" },
+  { href: "/sugestoes", label: "Ouvidoria", icon: "chat", color: "#1b365d" },
 ];
 
 function AtalhoSvg({ type, color }: { type: string; color: string }) {
@@ -68,6 +69,7 @@ function AtalhoSvg({ type, color }: { type: string; color: string }) {
 }
 
 export default function Header() {
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -128,6 +130,11 @@ export default function Header() {
     }
   }, []);
 
+  // Não exibe o Header na tela de login para manter o visual limpo
+  if (pathname?.startsWith("/login")) {
+    return null;
+  }
+
   async function handleLogout() {
     const supabase = getSupabase();
     await supabase.auth.signOut();
@@ -149,32 +156,29 @@ export default function Header() {
           {!logoError ? (
             <Image
               src="/logo.png"
-              alt="Logo do colégio"
-              width={54}
-              height={54}
+              alt="Logo do Colégio"
+              width={52}
+              height={52}
               className="rounded-full ring-2 ring-primary/25 group-hover:ring-primary/55 transition-all"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-[54px] h-[54px] rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">
-              LZ
+            <div className="w-[52px] h-[52px] rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">
+              CE
             </div>
           )}
           <div className="hidden lg:block leading-tight">
-            <p className="text-[13px] font-bold text-foreground flex items-center gap-1">
-              Portal LZ
-              <svg className="w-3.5 h-3.5 text-accent" viewBox="0 0 20 20" fill="currentColor">
-                <polygon points="10,1 12.5,7 19,7 13.8,11 15.8,17 10,13.2 4.2,17 6.2,11 1,7 7.5,7" />
-              </svg>
+            <p className="text-[14px] font-bold text-foreground">
+              Portal Escolar
             </p>
-            <p className="text-[10px] text-muted">Colégio Luiz Zanchim</p>
+            <p className="text-[11px] text-muted">Colégio Luiz Zanchim</p>
           </div>
         </Link>
 
-        {/* Faixa larga de atalhos com ícones SVG autorais */}
+        {/* Faixa de atalhos rápidos */}
         <div className="flex-1 flex items-center justify-center min-w-0 px-1">
-          <div className="hidden sm:flex items-center justify-between w-full max-w-md bg-gradient-to-r from-primary-soft via-[#fdf0e6] to-secondary-soft rounded-2xl px-1.5 py-1 border border-border/70 shadow-2xs">
+          <div className="hidden sm:flex items-center justify-between w-full max-w-md bg-gradient-to-r from-[#eef4ff] via-[#fdf6eb] to-[#e8f3ec] rounded-2xl px-1.5 py-1 border border-border/70 shadow-2xs">
             {atalhos.map((a) => (
               <Link
                 key={a.href}

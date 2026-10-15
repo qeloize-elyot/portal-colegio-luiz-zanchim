@@ -90,8 +90,8 @@ export default function CardapioPage() {
         badge="Alimentação Escolar"
         title="Cardápio da Cantina"
         subtitle="Confira a programação semanal de lanches e refeições preparadas com cuidado para os nossos estudantes."
-        accentColor="#2f6f4e"
-        softBg="#e8f3ec"
+        accentColor="#c45c26"
+        softBg="#fff7ed"
         illustration={<CantinaIllustration />}
       />
 
@@ -131,7 +131,7 @@ export default function CardapioPage() {
                 {dia.dia}
               </span>
               <span className="text-[11px] bg-white/20 px-2.5 py-0.5 rounded-full">
-                Cantina LZ
+                Cantina Escolar
               </span>
             </div>
 

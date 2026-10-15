@@ -11,9 +11,9 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Portal LZ | Colégio Vereador Luiz Zanchim",
+  title: "Portal Escolar | Colégio Vereador Luiz Zanchim",
   description:
-    "Portal interno do Colégio Estadual Cívico-Militar Vereador Luiz Zanchim. Acesso a materiais, cardápio, grêmio, enquetes e mais.",
+    "Portal Escolar do Colégio Estadual Cívico-Militar Vereador Luiz Zanchim. Acesso a materiais, cardápio, grêmio, enquetes e mais.",
   icons: {
     icon: [{ url: "/logo.png", type: "image/png" }],
     apple: [{ url: "/logo.png" }],
