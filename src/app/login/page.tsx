@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase/client";
 
+function isEmailGov(email: string) {
+  return email.trim().toLowerCase().endsWith(".gov.br");
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [modo, setModo] = useState<"login" | "cadastro">("login");
@@ -21,11 +25,17 @@ export default function LoginPage() {
     setCarregando(true);
 
     try {
+      if (!isEmailGov(email)) {
+        setErro("Apenas e-mails institucionais (.gov.br) podem acessar este portal.");
+        setCarregando(false);
+        return;
+      }
+
       const supabase = getSupabase();
 
       if (modo === "login") {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: email.trim().toLowerCase(),
           password: senha,
         });
         if (error) throw error;
@@ -33,7 +43,7 @@ export default function LoginPage() {
         router.refresh();
       } else {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: email.trim().toLowerCase(),
           password: senha,
           options: {
             data: {
@@ -61,9 +71,7 @@ export default function LoginPage() {
           {modo === "login" ? "Entrar no portal" : "Criar conta"}
         </h1>
         <p className="text-sm text-muted mb-6">
-          {modo === "login"
-            ? "Acesse com seu e-mail e senha."
-            : "Preencha os dados para se cadastrar."}
+          Acesso exclusivo para e-mails institucionais (.gov.br).
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -95,15 +103,16 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1">E-mail</label>
+            <label className="block text-sm font-medium mb-1">E-mail institucional</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full border border-border rounded-xl px-3 py-2.5 text-sm bg-white"
-              placeholder="seu.email@escola.pr.gov.br"
+              placeholder="seu.nome@escola.pr.gov.br"
             />
+            <p className="text-xs text-muted mt-1">Apenas endereços terminados em .gov.br</p>
           </div>
 
           <div>
@@ -137,24 +146,26 @@ export default function LoginPage() {
           {modo === "login" ? (
             <>
               Ainda não tem conta?{" "}
-              <button type="button" onClick={() => setModo("cadastro")} className="text-primary font-medium underline">
+              <button
+                type="button"
+                onClick={() => setModo("cadastro")}
+                className="text-primary font-medium underline"
+              >
                 Cadastre-se
               </button>
             </>
           ) : (
             <>
               Já tem conta?{" "}
-              <button type="button" onClick={() => setModo("login")} className="text-primary font-medium underline">
+              <button
+                type="button"
+                onClick={() => setModo("login")}
+                className="text-primary font-medium underline"
+              >
                 Faça login
               </button>
             </>
           )}
-        </p>
-
-        <p className="text-center mt-4">
-          <Link href="/" className="text-sm text-muted hover:text-primary">
-            ← Voltar ao início
-          </Link>
         </p>
       </div>
     </div>
