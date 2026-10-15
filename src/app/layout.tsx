@@ -1,3 +1,4 @@
+import { BackgroundBlobs } from "@/components/SvgDecorations";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
@@ -29,7 +30,9 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${geistSans.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <BackgroundBlobs />
+          {children}</main>
         <Footer />
       </body>
     </html>
