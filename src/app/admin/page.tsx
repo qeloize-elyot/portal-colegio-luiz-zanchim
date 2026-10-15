@@ -20,6 +20,7 @@ export default function AdminPage() {
   const [erro, setErro] = useState("");
   const [autorizado, setAutorizado] = useState(false);
   const [aba, setAba] = useState<"feedbacks" | "gestao">("feedbacks");
+  const [meuRole, setMeuRole] = useState("");
 
   useEffect(() => {
     async function carregar() {
@@ -35,14 +36,45 @@ export default function AdminPage() {
           return;
         }
 
+        // Lê perfil; se não existir ou estiver errado, tenta corrigir pelo metadata do cadastro
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
-        if (!profile || profile.role !== "ADMIN") {
-          setErro("Acesso restrito à administração.");
+        let role = profile?.role || "";
+        const metaRole = (user.user_metadata?.role as string) || "";
+
+        // Se o cadastro foi como ADMIN mas o banco ficou ALUNO, corrige
+        if (metaRole === "ADMIN" && role !== "ADMIN") {
+          await supabase.from("profiles").upsert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || "",
+            role: "ADMIN",
+          });
+          role = "ADMIN";
+        }
+
+        // Se não tem perfil, cria
+        if (!role) {
+          const novo = metaRole || "ALUNO";
+          await supabase.from("profiles").upsert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || "",
+            role: novo,
+          });
+          role = novo;
+        }
+
+        setMeuRole(role);
+
+        if (role !== "ADMIN") {
+          setErro(
+            `Seu perfil atual é "${role || "desconhecido"}". Apenas ADMIN acessa este painel. Rode o SQL no Supabase para corrigir (veja instruções).`
+          );
           setLoading(false);
           return;
         }
@@ -90,11 +122,31 @@ export default function AdminPage() {
 
   if (!autorizado) {
     return (
-      <div className="max-w-md mx-auto px-4 py-14 text-center">
-        <p className="text-muted mb-4">{erro || "Acesso não autorizado."}</p>
-        <Link href="/" className="text-primary font-medium underline">
-          Voltar ao início
-        </Link>
+      <div className="max-w-lg mx-auto px-4 py-14">
+        <div className="bg-card border border-border rounded-2xl p-6 text-center">
+          <p className="text-foreground font-semibold mb-2">Acesso restrito</p>
+          <p className="text-muted text-sm mb-4">{erro}</p>
+          <p className="text-xs text-muted mb-4">
+            Perfil detectado: <b>{meuRole || "—"}</b>
+          </p>
+          <div className="bg-primary-soft rounded-xl p-4 text-left text-xs text-foreground mb-4">
+            <p className="font-semibold mb-2">Como virar ADMIN de verdade:</p>
+            <ol className="list-decimal pl-4 space-y-1 text-muted">
+              <li>Abra o Supabase → SQL Editor</li>
+              <li>
+                Rode:{" "}
+                <code className="text-[11px] break-all">
+                  update public.profiles set role = 'ADMIN' where email =
+                  'seu.email@escola.pr.gov.br';
+                </code>
+              </li>
+              <li>Saia do site e entre de novo</li>
+            </ol>
+          </div>
+          <Link href="/" className="text-primary font-medium underline text-sm">
+            Voltar ao início
+          </Link>
+        </div>
       </div>
     );
   }
@@ -200,7 +252,7 @@ export default function AdminPage() {
           >
             <h3 className="font-bold text-foreground mb-1">Cardápio semanal</h3>
             <p className="text-sm text-muted">
-              Visualize e, em breve, edite a programação da cantina.
+              Visualize a programação da cantina.
             </p>
           </Link>
           <Link
@@ -209,7 +261,7 @@ export default function AdminPage() {
           >
             <h3 className="font-bold text-foreground mb-1">Materiais</h3>
             <p className="text-sm text-muted">
-              Como admin, você também pode publicar materiais didáticos.
+              Como admin, você também pode publicar materiais.
             </p>
           </Link>
           <Link
@@ -218,7 +270,7 @@ export default function AdminPage() {
           >
             <h3 className="font-bold text-foreground mb-1">Enquetes</h3>
             <p className="text-sm text-muted">
-              Acompanhe resultados e, em breve, crie novas votações.
+              Acompanhe votações da comunidade.
             </p>
           </Link>
           <Link
@@ -227,7 +279,7 @@ export default function AdminPage() {
           >
             <h3 className="font-bold text-foreground mb-1">Grêmio e eventos</h3>
             <p className="text-sm text-muted">
-              Comunicados e agenda da comunidade estudantil.
+              Comunicados da comunidade estudantil.
             </p>
           </Link>
         </div>
