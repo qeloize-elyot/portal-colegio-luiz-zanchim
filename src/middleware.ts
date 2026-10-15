@@ -3,25 +3,31 @@ import { NextResponse, type NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Rotas públicas
+  // Arquivos estáticos e API de moderação
   if (
-    pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
-    pathname.includes(".") // arquivos estáticos (logo, favicon, etc.)
+    pathname.includes(".") // logo.png, favicon, etc.
   ) {
     return NextResponse.next();
   }
 
-  // Verifica se existe cookie de sessão do Supabase
-  const hasSession =
-    request.cookies.getAll().some((c) =>
-      c.name.includes("auth-token") || c.name.startsWith("sb-")
-    );
+  // Única página pública: login
+  if (pathname.startsWith("/login")) {
+    return NextResponse.next();
+  }
+
+  // Procura cookie de sessão do Supabase
+  const cookies = request.cookies.getAll();
+  const hasSession = cookies.some(
+    (c) =>
+      c.name.includes("auth-token") ||
+      c.name.startsWith("sb-") ||
+      c.name.includes("supabase")
+  );
 
   if (!hasSession) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
