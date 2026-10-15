@@ -12,7 +12,7 @@ const navItems = [
   { href: "/cardapio", label: "Cardápio" },
   { href: "/gremio", label: "Grêmio" },
   { href: "/enquetes", label: "Enquetes" },
-  { href: "/feira", label: "Feira de Trocas" },
+  { href: "/feira", label: "Feira" },
   { href: "/faq", label: "Dúvidas" },
   { href: "/sugestoes", label: "Sugestões" },
 ];
@@ -22,7 +22,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     async function checkUser() {
@@ -32,72 +32,93 @@ export default function Header() {
           data: { user },
         } = await supabase.auth.getUser();
 
-        if (user) {
-          setUserEmail(user.email ?? null);
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", user.id)
-            .single();
-          setIsAdmin(profile?.role === "ADMIN");
-        } else {
+        if (!user) {
           setUserEmail(null);
-          setIsAdmin(false);
+          setRole(null);
+          return;
+        }
+
+        setUserEmail(user.email ?? null);
+
+        // tenta ler o perfil; se não existir, cria com role do metadata
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (profile?.role) {
+          setRole(profile.role);
+        } else {
+          const metaRole =
+            (user.user_metadata?.role as string) || "ALUNO";
+          await supabase.from("profiles").upsert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || "",
+            role: metaRole,
+          });
+          setRole(metaRole);
         }
       } catch {
         setUserEmail(null);
-        setIsAdmin(false);
+        setRole(null);
       }
     }
 
     checkUser();
 
-    const supabase = getSupabase();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      checkUser();
-    });
-
-    return () => subscription.unsubscribe();
+    try {
+      const supabase = getSupabase();
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(() => {
+        checkUser();
+      });
+      return () => subscription.unsubscribe();
+    } catch {
+      return;
+    }
   }, []);
 
   async function handleLogout() {
     const supabase = getSupabase();
     await supabase.auth.signOut();
     setUserEmail(null);
-    setIsAdmin(false);
-    router.push("/login");
-    router.refresh();
+    setRole(null);
+    window.location.href = "/login";
   }
 
+  const isAdmin = role === "ADMIN";
+
   return (
-    <header className="bg-white border-b border-border sticky top-0 z-50 shadow-sm">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center shrink-0 group">
+    <header className="bg-white border-b border-border sticky top-0 z-50">
+      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
+        <Link href="/" className="flex items-center shrink-0">
           {!logoError ? (
             <Image
               src="/logo.png"
-              alt="Logo do Colégio Cívico-Militar do Paraná"
-              width={56}
-              height={56}
-              className="rounded-full transition-transform duration-300 group-hover:scale-105"
+              alt="Logo do colégio"
+              width={40}
+              height={40}
+              className="rounded-full"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-[56px] h-[56px] rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">
-              CCMPR
+            <div className="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold">
+              LZ
             </div>
           )}
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-1 text-[13px] font-medium">
+        {/* Nav desktop — compacta */}
+        <nav className="hidden md:flex items-center gap-0.5 text-[12px] font-medium text-foreground/70">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="px-3 py-2 rounded-lg text-foreground/80 hover:text-primary hover:bg-primary-soft transition-colors duration-200"
+              className="px-2 py-1.5 rounded-md hover:text-primary hover:bg-primary-soft transition-colors"
             >
               {item.label}
             </Link>
@@ -105,7 +126,7 @@ export default function Header() {
           {isAdmin && (
             <Link
               href="/admin"
-              className="px-3 py-2 rounded-lg text-secondary font-semibold hover:bg-secondary-soft transition-colors"
+              className="ml-1 px-2.5 py-1.5 rounded-md bg-secondary text-white hover:opacity-90 transition-opacity"
             >
               Admin
             </Link>
@@ -114,22 +135,18 @@ export default function Header() {
 
         <div className="flex items-center gap-2">
           {userEmail ? (
-            <div className="hidden sm:flex items-center gap-2">
-              <span className="text-xs text-muted max-w-[140px] truncate" title={userEmail}>
-                {userEmail}
-              </span>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border hover:border-primary hover:text-primary transition-colors"
-              >
-                Sair
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="hidden sm:inline text-[11px] text-muted hover:text-primary px-2 py-1"
+              title={userEmail}
+            >
+              Sair
+            </button>
           ) : (
             <Link
               href="/login"
-              className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-primary text-white hover:bg-primary-dark transition-colors"
+              className="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-primary text-white"
             >
               Entrar
             </Link>
@@ -137,10 +154,9 @@ export default function Header() {
 
           <button
             type="button"
-            className="lg:hidden p-2 rounded-lg hover:bg-primary-soft text-foreground transition-colors"
+            className="md:hidden p-1.5 rounded-md hover:bg-primary-soft"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-            aria-expanded={menuOpen}
+            aria-label="Menu"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {menuOpen ? (
@@ -154,48 +170,38 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <nav className="lg:hidden border-t border-border bg-primary-soft/40 animate-soft-pop">
-          <div className="max-w-5xl mx-auto px-4 py-2 flex flex-col">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="px-3 py-2.5 rounded-lg text-sm font-semibold text-secondary hover:bg-white transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                Admin
-              </Link>
-            )}
-            {userEmail ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  handleLogout();
-                }}
-                className="px-3 py-2.5 rounded-lg text-sm font-medium text-left hover:bg-white transition-colors"
-              >
-                Sair ({userEmail})
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="px-3 py-2.5 rounded-lg text-sm font-semibold text-primary hover:bg-white transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                Entrar / Criar conta
-              </Link>
-            )}
-          </div>
+        <nav className="md:hidden border-t border-border bg-white px-4 py-2 flex flex-col">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="px-2 py-2.5 text-sm rounded-md hover:bg-primary-soft"
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          ))}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="px-2 py-2.5 text-sm font-semibold text-secondary"
+              onClick={() => setMenuOpen(false)}
+            >
+              Painel Admin
+            </Link>
+          )}
+          {userEmail && (
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                handleLogout();
+              }}
+              className="px-2 py-2.5 text-sm text-left text-muted"
+            >
+              Sair
+            </button>
+          )}
         </nav>
       )}
     </header>
