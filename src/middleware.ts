@@ -1,37 +1,62 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: { headers: request.headers },
+  });
+
   const { pathname } = request.nextUrl;
 
-  // Arquivos estáticos e API de moderação
+  // Liberar estáticos e API
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
-    pathname.includes(".") // logo.png, favicon, etc.
+    pathname.includes(".")
   ) {
-    return NextResponse.next();
+    return response;
   }
 
-  // Única página pública: login
-  if (pathname.startsWith("/login")) {
-    return NextResponse.next();
-  }
-
-  // Procura cookie de sessão do Supabase
-  const cookies = request.cookies.getAll();
-  const hasSession = cookies.some(
-    (c) =>
-      c.name.includes("auth-token") ||
-      c.name.startsWith("sb-") ||
-      c.name.includes("supabase")
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key",
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
   );
 
-  if (!hasSession) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Sem login → só /login
+  if (!user && !pathname.startsWith("/login")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  // Já logado e tentando ir em /login → manda pro início
+  if (user && pathname.startsWith("/login")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
+  return response;
 }
 
 export const config = {
