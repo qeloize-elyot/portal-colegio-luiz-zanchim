@@ -98,8 +98,7 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-3 sm:px-4 h-[72px] flex items-center gap-2 sm:gap-3">
-        {/* Logo */}
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 h-[76px] flex items-center gap-2 sm:gap-3">
         <Link
           href="/"
           className="flex items-center gap-2.5 shrink-0 group"
@@ -120,39 +119,37 @@ export default function Header() {
               LZ
             </div>
           )}
-          <div className="hidden md:block leading-tight">
+          <div className="hidden lg:block leading-tight">
             <p className="text-[13px] font-bold text-foreground">Portal LZ</p>
             <p className="text-[10px] text-muted">comunidade escolar</p>
           </div>
         </Link>
 
-        {/* Faixa criativa no meio — atalhos com ícones */}
-        <div className="flex-1 flex items-center justify-center min-w-0">
-          <div className="hidden sm:flex items-center gap-1 bg-gradient-to-r from-primary-soft via-[#fdf0e6] to-secondary-soft rounded-2xl px-2 py-1.5 border border-border/60">
+        {/* Faixa larga de atalhos */}
+        <div className="flex-1 flex items-center justify-center min-w-0 px-1">
+          <div className="hidden sm:flex items-center justify-between w-full max-w-md bg-gradient-to-r from-primary-soft via-[#fdf0e6] to-secondary-soft rounded-2xl px-1.5 py-1.5 border border-border/60">
             {atalhos.map((a) => (
               <Link
                 key={a.href}
                 href={a.href}
-                className="flex flex-col items-center justify-center w-[52px] py-1 rounded-xl hover:bg-white/80 transition-colors"
+                className="flex flex-col items-center justify-center flex-1 min-w-0 py-1.5 px-1 rounded-xl hover:bg-white/90 transition-colors"
                 title={a.label}
               >
-                <span className="text-base leading-none">{a.emoji}</span>
-                <span className="text-[9px] font-medium text-foreground/70 mt-0.5 truncate max-w-full">
+                <span className="text-lg leading-none">{a.emoji}</span>
+                <span className="text-[10px] font-semibold text-foreground/75 mt-0.5 truncate w-full text-center">
                   {a.label}
                 </span>
               </Link>
             ))}
           </div>
-          {/* mobile: bolinhas decorativas */}
           <div className="flex sm:hidden items-center gap-1.5 opacity-80">
             <span className="w-2.5 h-2.5 rounded-full bg-primary" />
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
             <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
-            <span className="h-[3px] w-10 rounded-full bg-gradient-to-r from-primary to-secondary" />
+            <span className="h-[3px] w-12 rounded-full bg-gradient-to-r from-primary to-secondary" />
           </div>
         </div>
 
-        {/* Direita */}
         <div className="flex items-center gap-1.5 shrink-0">
           {isAdmin && (
             <Link
