@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { getSupabase } from "@/lib/supabase/client";
 
 function isEmailGov(email: string) {
@@ -9,7 +8,6 @@ function isEmailGov(email: string) {
 }
 
 export default function LoginPage() {
-  const router = useRouter();
   const [modo, setModo] = useState<"login" | "cadastro">("login");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -38,30 +36,30 @@ export default function LoginPage() {
           password: senha,
         });
         if (error) throw error;
-        router.push("/");
-        router.refresh();
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim().toLowerCase(),
-          password: senha,
-          options: {
-            data: {
-              full_name: nome,
-              role: role,
-            },
-          },
-        });
-        if (error) throw error;
-
-        if (data.session) {
-          router.push("/");
-          router.refresh();
-          return;
-        }
-
-        alert("Conta criada! Agora faca login com o mesmo e-mail e senha.");
-        setModo("login");
+        // reload completo para o middleware reconhecer a sessao
+        window.location.href = "/";
+        return;
       }
+
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password: senha,
+        options: {
+          data: {
+            full_name: nome,
+            role: role,
+          },
+        },
+      });
+      if (error) throw error;
+
+      if (data.session) {
+        window.location.href = "/";
+        return;
+      }
+
+      alert("Conta criada! Agora faca login com o mesmo e-mail e senha.");
+      setModo("login");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro ao autenticar.";
       setErro(message);
