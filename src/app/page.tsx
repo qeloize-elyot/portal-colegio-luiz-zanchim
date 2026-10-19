@@ -5,169 +5,147 @@ const services = [
   {
     href: "/materiais",
     title: "Materiais de Apoio",
-    description: "Slides, listas e resumos por turma e disciplina.",
-    tag: "Estudos",
-    bgHeader: "#1e3a8a",
+    description: "Apostilas, slides, listas de exercícios e conteúdos divididos por ano, turma e matéria.",
+    tag: "Acadêmico",
+    accent: "#1e40af",
+    softBg: "#eff6ff",
     icon: "book",
   },
   {
     href: "/cardapio",
     title: "Cardápio da Cantina",
-    description: "Veja o que será servido durante a semana.",
-    tag: "Rotina",
-    bgHeader: "#1b365d",
+    description: "Programação nutricional da semana com os lanches do recreio e refeições principais.",
+    tag: "Alimentação",
+    accent: "#c2410c",
+    softBg: "#fff7ed",
     icon: "apple",
   },
   {
     href: "/gremio",
     title: "Painel do Grêmio",
-    description: "Comunicados, eventos e novidades do Grêmio.",
-    tag: "Participação",
-    bgHeader: "#9a4520",
+    description: "Comunicados oficiais, gincanas, projetos culturais e ações da liderança estudantil.",
+    tag: "Comunidade",
+    accent: "#b45309",
+    softBg: "#fffbeb",
     icon: "megaphone",
   },
   {
     href: "/enquetes",
-    title: "Enquetes",
-    description: "Opine e ajude a construir decisões da escola.",
-    tag: "Voz ativa",
-    bgHeader: "#1e293b",
+    title: "Enquetes Escolares",
+    description: "Participe das votações ativas e ajude a decidir projetos e melhorias para o colégio.",
+    tag: "Democracia",
+    accent: "#4338ca",
+    softBg: "#eef2ff",
     icon: "vote",
   },
   {
     href: "/feira",
     title: "Feira de Trocas",
-    description: "Doe, troque ou encontre livros e materiais.",
-    tag: "Comunidade",
-    bgHeader: "#14532d",
+    description: "Espaço solidário para doação, troca ou venda de livros didáticos e uniformes.",
+    tag: "Sustentabilidade",
+    accent: "#15803d",
+    softBg: "#f0fdf4",
     icon: "swap",
   },
   {
     href: "/calculadora",
-    title: "Calculadora de Notas",
-    description: "Calcule quanto precisa para atingir a média.",
-    tag: "Ferramentas",
-    bgHeader: "#1b365d",
+    title: "Calculadora Trimestral",
+    description: "Simule suas notas dos 3 trimestres (0 a 100 pts) e acompanhe a meta de 180 pontos.",
+    tag: "Planejamento",
+    accent: "#0f766e",
+    softBg: "#f0fdfa",
     icon: "calc",
   },
   {
     href: "/faq",
     title: "Dúvidas Frequentes",
-    description: "Regimento, documentos, horários e procedimentos.",
-    tag: "Ajuda",
-    bgHeader: "#7c2d12",
+    description: "Consulte normas de uniforme, horários de turnos, atestados e procedimentos da secretaria.",
+    tag: "Regimento",
+    accent: "#9a3412",
+    softBg: "#fff7ed",
     icon: "help",
   },
   {
     href: "/sugestoes",
-    title: "Sugestões e Reclamações",
-    description: "Canal anônimo e seguro para a administração.",
-    tag: "Escuta",
-    bgHeader: "#065f46",
+    title: "Ouvidoria Anônima",
+    description: "Canal 100% confidencial com moderação inteligente por IA para sugestões e críticas.",
+    tag: "Escuta Segura",
+    accent: "#047857",
+    softBg: "#ecfdf5",
     icon: "chat",
   },
 ];
 
-function CardRichSvg({ type }: { type: string }) {
-  const cls = "w-16 h-16 svg-float drop-shadow-sm";
+function ModernServiceIcon({ type, color }: { type: string; color: string }) {
   switch (type) {
     case "book":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <path d="M14 24 C24 20, 34 21, 40 26 C46 21, 56 20, 66 24 V58 C56 54, 46 55, 40 60 C34 55, 24 54, 14 58 Z" fill="#ffffff" stroke="#93c5fd" strokeWidth="2.5" />
-          <line x1="40" y1="26" x2="40" y2="60" stroke="#cbd5e1" strokeWidth="2.5" />
-          <line x1="20" y1="33" x2="34" y2="33" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="20" y1="41" x2="32" y2="41" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="46" y1="33" x2="60" y2="33" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="46" y1="41" x2="58" y2="41" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" />
-          <polygon points="52,55 58,55 58,68 55,64 52,68" fill="#ef4444" />
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <path d="M8 12C15 9.5 21 10.5 24 13.5C27 10.5 33 9.5 40 12V36C33 33.5 27 34.5 24 37.5C21 34.5 15 33.5 8 36V12Z" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="2.8" strokeLinejoin="round" />
+          <path d="M24 13.5V37.5" stroke={color} strokeWidth="2.8" />
+          <path d="M13 19H20M13 25H19M28 19H35M28 25H34" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       );
     case "apple":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <path className="svg-steam-1" d="M28 22 C26 16, 31 14, 28 9" stroke="#fde68a" strokeWidth="2.5" strokeLinecap="round" />
-          <path className="svg-steam-2" d="M40 20 C38 14, 43 12, 40 7" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
-          <ellipse cx="40" cy="62" rx="28" ry="6" fill="#e2e8f0" />
-          <path d="M18 46 C18 30, 48 30, 48 46 Z" fill="#f59e0b" />
-          <path d="M16 47 Q24 51 32 47 T49 47" stroke="#22c55e" strokeWidth="3.5" strokeLinecap="round" />
-          <rect x="18" y="50" width="30" height="6" rx="3" fill="#78350f" />
-          <rect x="20" y="55" width="26" height="5" rx="2.5" fill="#d97706" />
-          <polygon points="52,32 66,32 63,58 55,58" fill="#fb923c" stroke="#ffffff" strokeWidth="2" />
-          <path d="M59 32 L64 22 L70 22" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <path d="M14 28C14 19 30 19 30 28H14Z" fill={color} fillOpacity="0.2" stroke={color} strokeWidth="2.6" strokeLinejoin="round" />
+          <path d="M12 31H32M14 35H30" stroke={color} strokeWidth="2.8" strokeLinecap="round" />
+          <path d="M33 18H40L38 35H34L33 18Z" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M36 18L38 12H41" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       );
     case "megaphone":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <g transform="rotate(-12 40 40)">
-            <polygon points="22,35 52,22 52,58 22,45" fill="#facc15" />
-            <polygon points="35,29 52,22 52,58 35,51" fill="#fb923c" />
-            <ellipse cx="52" cy="40" rx="4" ry="18" fill="#ffffff" />
-            <rect x="15" y="34" width="8" height="12" rx="3" fill="#ffffff" />
-            <path d="M25 45 L29 60 C30 63 24 64 22 60 L19 45 Z" fill="#fde68a" />
-            <path d="M60 32 Q67 40 60 48" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
-          </g>
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <polygon points="12,21 34,12 34,36 12,27" fill={color} fillOpacity="0.18" stroke={color} strokeWidth="2.8" strokeLinejoin="round" />
+          <rect x="7" y="20" width="5" height="8" rx="2" stroke={color} strokeWidth="2.6" />
+          <path d="M14 27L17 37H13L11 27" stroke={color} strokeWidth="2.6" strokeLinejoin="round" />
+          <path d="M39 18C41.5 21.5 41.5 26.5 39 30" stroke={color} strokeWidth="2.8" strokeLinecap="round" />
         </svg>
       );
     case "vote":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <rect x="16" y="20" width="48" height="42" rx="8" fill="#ffffff" />
-          <rect x="25" y="42" width="7" height="12" rx="2" fill="#facc15" />
-          <rect x="36" y="28" width="7" height="26" rx="2" fill="#c45c26" />
-          <rect x="47" y="35" width="7" height="19" rx="2" fill="#2f6f4e" />
-          <circle cx="58" cy="24" r="10" fill="#22c55e" stroke="#ffffff" strokeWidth="2.5" />
-          <path d="M54 24 L57 27 L63 21" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <rect x="8" y="10" width="32" height="28" rx="6" fill={color} fillOpacity="0.12" stroke={color} strokeWidth="2.8" />
+          <path d="M16 30V24M24 30V17M32 30V21" stroke={color} strokeWidth="3.5" strokeLinecap="round" />
         </svg>
       );
     case "swap":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <rect x="22" y="24" width="14" height="20" rx="2" transform="rotate(-8 22 24)" fill="#38bdf8" stroke="#ffffff" strokeWidth="1.5" />
-          <rect x="34" y="20" width="15" height="22" rx="2" fill="#fb923c" stroke="#ffffff" strokeWidth="1.5" />
-          <rect x="46" y="24" width="13" height="19" rx="2" transform="rotate(10 46 24)" fill="#facc15" stroke="#ffffff" strokeWidth="1.5" />
-          <polygon points="18,40 62,40 57,62 23,62" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" strokeLinejoin="round" />
-          <rect x="31" y="46" width="18" height="10" rx="3" fill="#ffffff" />
-          <path d="M35 51 H45" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" />
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <path d="M12 18H36L30 12M36 30H12L18 36" stroke={color} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+          <rect x="18" y="21" width="12" height="6" rx="2" fill={color} fillOpacity="0.2" />
         </svg>
       );
     case "calc":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <rect x="24" y="14" width="32" height="52" rx="6" fill="#ffffff" />
-          <rect x="29" y="20" width="22" height="11" rx="2.5" fill="#dcfce7" />
-          <circle cx="33" cy="39" r="3" fill="#94a3b8" />
-          <circle cx="40" cy="39" r="3" fill="#94a3b8" />
-          <circle cx="47" cy="39" r="3" fill="#fb923c" />
-          <circle cx="33" cy="48" r="3" fill="#94a3b8" />
-          <circle cx="40" cy="48" r="3" fill="#94a3b8" />
-          <circle cx="47" cy="48" r="3" fill="#facc15" />
-          <rect x="30" y="55" width="20" height="5" rx="2.5" fill="#2f6f4e" />
-          <circle cx="58" cy="22" r="9" fill="#c45c26" stroke="#ffffff" strokeWidth="2" />
-          <text x="58" y="25" textAnchor="middle" fill="#ffffff" fontSize="8" fontWeight="bold">10</text>
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <rect x="12" y="7" width="24" height="34" rx="5" fill={color} fillOpacity="0.12" stroke={color} strokeWidth="2.8" />
+          <rect x="16" y="12" width="16" height="7" rx="2" fill={color} fillOpacity="0.25" />
+          <circle cx="18" cy="25" r="2" fill={color} />
+          <circle cx="24" cy="25" r="2" fill={color} />
+          <circle cx="30" cy="25" r="2" fill={color} />
+          <circle cx="18" cy="31" r="2" fill={color} />
+          <circle cx="24" cy="31" r="2" fill={color} />
+          <circle cx="30" cy="31" r="2" fill={color} />
         </svg>
       );
     case "help":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <rect x="16" y="20" width="32" height="26" rx="8" fill="#facc15" />
-          <polygon points="24,46 18,53 30,46" fill="#facc15" />
-          <text x="32" y="39" textAnchor="middle" fill="#1e293b" fontSize="18" fontWeight="bold">?</text>
-          <rect x="38" y="34" width="28" height="24" rx="7" fill="#ffffff" />
-          <polygon points="56,58 62,64 50,58" fill="#ffffff" />
-          <text x="52" y="51" textAnchor="middle" fill="#15803d" fontSize="16" fontWeight="bold">!</text>
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <circle cx="24" cy="24" r="16" fill={color} fillOpacity="0.12" stroke={color} strokeWidth="2.8" />
+          <path d="M19.5 19.5C20 16.5 26.5 16.5 27.5 19.5C28.5 22.5 24 23.5 24 27" stroke={color} strokeWidth="2.8" strokeLinecap="round" />
+          <circle cx="24" cy="32.5" r="1.8" fill={color} />
         </svg>
       );
     case "chat":
       return (
-        <svg viewBox="0 0 80 80" className={cls} fill="none">
-          <path d="M40 16 C28 16 21 25 21 35 C21 42 26 47 30 52 L50 52 C54 47 59 42 59 35 C59 25 52 16 40 16 Z" fill="#facc15" />
-          <rect x="31" y="54" width="18" height="6" rx="3" fill="#e2e8f0" />
-          <rect x="44" y="42" width="24" height="18" rx="6" fill="#ffffff" />
-          <circle cx="51" cy="51" r="2" fill="#065f46" />
-          <circle cx="56" cy="51" r="2" fill="#065f46" />
-          <circle cx="61" cy="51" r="2" fill="#065f46" />
+        <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+          <path d="M10 12H38C40.2 12 42 13.8 42 16V30C42 32.2 40.2 34 38 34H20L12 40V34H10C7.8 34 6 32.2 6 30V16C6 13.8 7.8 12 10 12Z" fill={color} fillOpacity="0.14" stroke={color} strokeWidth="2.8" strokeLinejoin="round" />
+          <circle cx="18" cy="23" r="2" fill={color} />
+          <circle cx="24" cy="23" r="2" fill={color} />
+          <circle cx="30" cy="23" r="2" fill={color} />
         </svg>
       );
     default:
@@ -177,146 +155,277 @@ function CardRichSvg({ type }: { type: string }) {
 
 export default function Home() {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 md:py-14">
-      <section className="mb-14 animate-fade-in-up">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1b365d] via-[#1f4742] to-[#2f6f4e] text-white border border-border px-6 py-10 md:px-12 md:py-12 shadow-md">
-          <svg
-            className="pointer-events-none absolute -right-10 -bottom-10 w-80 h-80 opacity-15"
-            viewBox="0 0 200 200"
-            fill="none"
-          >
-            <circle cx="100" cy="100" r="90" stroke="#e6b422" strokeWidth="3" strokeDasharray="10 8" />
-            <circle cx="100" cy="100" r="65" stroke="#ffffff" strokeWidth="2" />
-          </svg>
-
-          <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="max-w-lg text-center md:text-left">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wide uppercase text-[#fde68a] mb-3 bg-white/15 border border-white/20 px-3.5 py-1 rounded-full">
-                <span className="w-2 h-2 rounded-full bg-[#e6b422]" />
-                Portal Escolar · CCMPR
-              </span>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
-                Um espaço feito para a nossa escola
-              </h1>
-              <p className="text-white/85 text-base md:text-lg leading-relaxed mb-6">
-                Materiais de apoio, cardápio da cantina, grêmio estudantil, enquetes e um canal aberto
-                de diálogo. Tudo em um só lugar para o Colégio Estadual Cívico-Militar Vereador Luiz Zanchim.
-              </p>
-              <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                <Link
-                  href="/materiais"
-                  className="inline-flex items-center gap-2 bg-[#c45c26] text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-[#9a4520] transition-colors shadow-sm"
-                >
-                  Ver materiais
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </Link>
-                <Link
-                  href="/sugestoes"
-                  className="inline-flex items-center gap-2 bg-white text-[#1b365d] font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-[#faf6f1] transition-colors shadow-sm"
-                >
-                  Enviar sugestão
-                </Link>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-8 py-7">
+      {/* LAYOUT DE DASHBOARD EM 3 COLUNAS (PREENCHE TODA A TELA) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-7 items-start">
+        
+        {/* COLUNA ESQUERDA (SIDEBAR DE ACESSO RÁPIDO E IDENTIDADE) — 3 COLUNAS */}
+        <aside className="xl:col-span-3 space-y-6">
+          {/* Card do Colégio */}
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs">
+            <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Brasão CCMPR"
+                className="w-14 h-14 rounded-full ring-2 ring-[#0f2537]/15 object-contain bg-white p-0.5"
+              />
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-100 text-amber-900">
+                  CCMPR · Paraná
+                </span>
+                <h2 className="font-extrabold text-slate-900 text-sm mt-1 leading-snug">
+                  Colégio Estadual Cívico-Militar Vereador Luiz Zanchim
+                </h2>
               </div>
             </div>
 
-            <div className="shrink-0">
-              <SchoolLogoShowcase size={148} />
+            <div className="mt-4 space-y-2.5 text-xs">
+              <div className="flex items-center justify-between py-1.5 px-3 rounded-xl bg-slate-50">
+                <span className="text-slate-500 font-medium">Modelo Letivo</span>
+                <span className="font-bold text-slate-800">3 Trimestres</span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 px-3 rounded-xl bg-slate-50">
+                <span className="text-slate-500 font-medium">Meta Anual</span>
+                <span className="font-bold text-emerald-700">180 Pontos</span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 px-3 rounded-xl bg-slate-50">
+                <span className="text-slate-500 font-medium">Acesso</span>
+                <span className="font-bold text-slate-800">@escola.pr.gov.br</span>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section className="mb-14 animate-fade-in-up" style={{ animationDelay: "0.08s" }}>
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-foreground">
-              O que você pode fazer aqui
-            </h2>
-            <p className="text-muted text-sm mt-1">
-              Escolha a área desejada e participe do dia a dia do colégio
+          {/* Menu Lateral de Atalhos Diretos */}
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-xs">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 px-2 mb-3">
+              Menu Rápido do Aluno
+            </h3>
+            <div className="space-y-1">
+              {services.map((s) => (
+                <Link
+                  key={s.href}
+                  href={s.href}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-[#0f2537] transition-colors group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: s.accent }}
+                    />
+                    <span>{s.title}</span>
+                  </div>
+                  <span className="text-slate-400 group-hover:translate-x-0.5 transition-transform">
+                    →
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Card de Destaque da Calculadora Trimestral */}
+          <div className="bg-gradient-to-br from-[#0f2537] to-[#1e3a5f] text-white rounded-3xl p-6 shadow-md relative overflow-hidden">
+            <svg className="absolute -right-6 -bottom-6 w-28 h-28 opacity-10" viewBox="0 0 100 100" fill="none">
+              <circle cx="50" cy="50" r="40" stroke="#ffffff" strokeWidth="8" />
+            </svg>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
+              Simulador Oficial
+            </span>
+            <h3 className="font-extrabold text-base mt-1 mb-2">
+              Já calculou sua pontuação neste trimestre?
+            </h3>
+            <p className="text-xs text-white/80 leading-relaxed mb-4">
+              Cada trimestre vale 100 pontos. Confira quantos pontos faltam para atingir os 180 pontos no ano.
             </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {services.map((service) => (
             <Link
-              key={service.href}
-              href={service.href}
-              className="card-service relative overflow-hidden bg-card border border-border rounded-3xl flex flex-col group shadow-2xs"
+              href="/calculadora"
+              className="inline-flex items-center justify-center w-full py-2.5 px-4 rounded-xl bg-amber-400 text-slate-950 font-extrabold text-xs hover:bg-amber-300 transition-colors"
             >
-              {/* Topo Ilustrado com Mini-SVG Rico e Fundo Contrastante */}
-              <div
-                className="h-28 w-full flex items-center justify-center relative overflow-hidden"
-                style={{ backgroundColor: service.bgHeader }}
-              >
-                <svg
-                  className="pointer-events-none absolute -right-4 -top-4 w-24 h-24 opacity-15 group-hover:scale-110 transition-transform"
-                  viewBox="0 0 80 80"
-                  fill="none"
-                >
-                  <circle cx="40" cy="40" r="32" stroke="#ffffff" strokeWidth="4" strokeDasharray="6 6" />
-                </svg>
-                <CardRichSvg type={service.icon} />
-              </div>
-
-              <div className="p-5 flex-1 flex flex-col">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-secondary mb-1">
-                  {service.tag}
-                </span>
-                <h3 className="font-bold text-foreground text-[16px] mb-1.5">
-                  {service.title}
-                </h3>
-                <p className="text-sm text-muted leading-relaxed flex-1">
-                  {service.description}
-                </p>
-                <span className="mt-4 text-sm font-semibold text-primary inline-flex items-center gap-1">
-                  Acessar
-                  <svg className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </div>
+              Abrir Calculadora de Notas
             </Link>
-          ))}
-        </div>
-      </section>
-
-      <section
-        className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-fade-in-up"
-        style={{ animationDelay: "0.15s" }}
-      >
-        <div className="bg-secondary-soft border border-border rounded-3xl p-6 relative overflow-hidden">
-          <svg className="absolute -right-4 -bottom-4 w-32 h-32 opacity-20 svg-float" viewBox="0 0 100 100" fill="none">
-            <circle cx="50" cy="50" r="40" fill="#2f6f4e" />
-            <path d="M32 52 L45 65 L70 38" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center mb-4 text-lg font-bold shadow-xs">
-            1
           </div>
-          <h3 className="font-bold text-foreground mb-2">Feito para quem estuda e trabalha aqui</h3>
-          <p className="text-sm text-muted leading-relaxed relative max-w-md">
-            Este portal é de uso interno. O acesso com e-mail institucional garante segurança
-            conforme o perfil de cada membro da comunidade escolar.
-          </p>
+        </aside>
+
+        {/* COLUNA CENTRAL (HERO + SERVIÇOS BENTO GRID) — 6 COLUNAS */}
+        <div className="xl:col-span-6 space-y-7">
+          {/* Hero Banner Refinado */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0f2537] via-[#183b4e] to-[#1f513f] text-white p-7 sm:p-9 shadow-lg border border-white/10">
+            <svg
+              className="pointer-events-none absolute -right-12 -bottom-12 w-72 h-72 opacity-15"
+              viewBox="0 0 200 200"
+              fill="none"
+            >
+              <circle cx="100" cy="100" r="85" stroke="#fbbf24" strokeWidth="3" strokeDasharray="10 8" />
+              <circle cx="100" cy="100" r="60" stroke="#ffffff" strokeWidth="1.5" />
+            </svg>
+
+            <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="max-w-md text-center sm:text-left">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-300 bg-white/10 border border-white/15 px-3 py-1 rounded-full mb-3">
+                  <span className="w-2 h-2 rounded-full bg-amber-400" />
+                  Plataforma Digital Unificada
+                </span>
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-3">
+                  Tudo o que o estudante precisa, em um só lugar.
+                </h1>
+                <p className="text-white/85 text-sm leading-relaxed mb-5">
+                  Consulte materiais didáticos, acompanhe o cardápio semanal, participe do Grêmio e utilize o canal de escuta protegido por IA.
+                </p>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2.5">
+                  <Link
+                    href="/materiais"
+                    className="bg-[#c45c26] hover:bg-[#a64b1d] text-white font-bold text-xs px-5 py-3 rounded-xl transition-colors shadow-sm"
+                  >
+                    Acessar Materiais →
+                  </Link>
+                  <Link
+                    href="/sugestoes"
+                    className="bg-white/15 hover:bg-white/25 text-white border border-white/25 font-bold text-xs px-5 py-3 rounded-xl transition-colors"
+                  >
+                    Ouvidoria Anônima
+                  </Link>
+                </div>
+              </div>
+
+              <div className="shrink-0">
+                <SchoolLogoShowcase size={126} />
+              </div>
+            </div>
+          </div>
+
+          {/* Cabeçalho da Grade de Serviços */}
+          <div className="flex items-center justify-between px-1">
+            <div>
+              <h2 className="text-xl font-extrabold text-slate-900">
+                Serviços e Áreas do Portal
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Selecione uma ferramenta abaixo para iniciar
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-slate-500 bg-white border border-slate-200 px-3 py-1 rounded-full">
+              8 módulos ativos
+            </span>
+          </div>
+
+          {/* Grade de Cards Limpos e Profissionais (Estilo Bento Grid) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {services.map((service) => (
+              <Link
+                key={service.href}
+                href={service.href}
+                className="group bg-white border border-slate-200/90 hover:border-slate-300 rounded-3xl p-5 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden"
+              >
+                {/* Barra superior fina de cor de destaque */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-1.5"
+                  style={{ backgroundColor: service.accent }}
+                />
+
+                <div>
+                  <div className="flex items-center justify-between gap-3 mb-4 pt-1">
+                    <div
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center border border-black/5 transition-transform group-hover:scale-105"
+                      style={{ backgroundColor: service.softBg }}
+                    >
+                      <ModernServiceIcon type={service.icon} color={service.accent} />
+                    </div>
+                    <span
+                      className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full"
+                      style={{
+                        backgroundColor: service.softBg,
+                        color: service.accent,
+                      }}
+                    >
+                      {service.tag}
+                    </span>
+                  </div>
+
+                  <h3 className="font-extrabold text-slate-900 text-base mb-1.5 group-hover:text-[#c45c26] transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:text-[#c45c26]">
+                  <span>Abrir módulo</span>
+                  <span className="w-6 h-6 rounded-full bg-slate-100 group-hover:bg-[#c45c26] group-hover:text-white flex items-center justify-center transition-colors">
+                    →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
 
-        <div className="bg-accent-soft border border-border rounded-3xl p-6 relative overflow-hidden">
-          <svg className="absolute -right-4 -bottom-4 w-32 h-32 opacity-25 svg-float-rev" viewBox="0 0 100 100" fill="none">
-            <polygon points="50,10 62,38 92,38 67,56 76,86 50,68 24,86 33,56 8,38 38,38" fill="#e6b422" />
-          </svg>
-          <div className="w-10 h-10 rounded-xl bg-accent text-foreground flex items-center justify-center mb-4 text-lg font-bold shadow-xs">
-            2
+        {/* COLUNA DIREITA (PAINEL DE INFORMAÇÕES, HORÁRIOS E OUVIDORIA IA) — 3 COLUNAS */}
+        <aside className="xl:col-span-3 space-y-6">
+          {/* Quadro de Horários e Turnos */}
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#c45c26]" />
+              <h3 className="font-extrabold text-slate-900 text-sm">
+                Horários de Funcionamento
+              </h3>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <p className="font-bold text-slate-800">Turno Matutino</p>
+                <p className="text-slate-500 mt-0.5">07h20 às 12h00</p>
+              </div>
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <p className="font-bold text-slate-800">Turno Vespertino</p>
+                <p className="text-slate-500 mt-0.5">13h20 às 18h00</p>
+              </div>
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <p className="font-bold text-slate-800">Secretaria e Biblioteca</p>
+                <p className="text-slate-500 mt-0.5">Segunda a Sexta · 08h às 17h</p>
+              </div>
+            </div>
           </div>
-          <h3 className="font-bold text-foreground mb-2">Um canal de escuta de verdade</h3>
-          <p className="text-sm text-muted leading-relaxed relative max-w-md">
-            Sugestões e reclamações podem ser enviadas de forma anônima. Tudo
-            passa por moderação automática antes de chegar à administração.
-          </p>
-        </div>
-      </section>
+
+          {/* Card Explicativo da Moderação com IA */}
+          <div className="bg-emerald-950 text-white rounded-3xl p-6 shadow-md relative overflow-hidden">
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-800/80 text-emerald-200 px-2.5 py-1 rounded-full mb-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              Proteção com IA Ativa
+            </div>
+            <h3 className="font-extrabold text-base mb-2">
+              Ouvidoria Anônima Inteligente
+            </h3>
+            <p className="text-xs text-emerald-100/85 leading-relaxed mb-4">
+              Suas sugestões e reclamações não registram nome nem e-mail. A IA analisa o contexto em tempo real para garantir respeito e bloquear ofensas.
+            </p>
+            <Link
+              href="/sugestoes"
+              className="inline-flex items-center justify-center w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition-colors"
+            >
+              Enviar Mensagem Anônima
+            </Link>
+          </div>
+
+          {/* Dúvidas Rápidas */}
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs">
+            <h3 className="font-extrabold text-slate-900 text-sm mb-2">
+              Precisa de ajuda rápida?
+            </h3>
+            <p className="text-xs text-slate-500 leading-relaxed mb-4">
+              Veja como solicitar atestado de matrícula, justificar faltas ou consultar normas do uniforme escolar.
+            </p>
+            <Link
+              href="/faq"
+              className="inline-flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors"
+            >
+              <span>Consultar Perguntas Frequentes</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </aside>
+
+      </div>
     </div>
   );
 }
