@@ -13,7 +13,7 @@ const faqs = [
     categoria: "Documentos",
     pergunta: "Como solicitar um atestado de matrícula?",
     resposta:
-      "O atestado de matrícula pode ser solicitado na secretaria escolar, de segunda a sexta, das 8h às 17h. É necessário apresentar documento de identificação do aluno ou do responsável.",
+      "O atestado de matrícula pode ser solicitado na secretaria escolar, de segunda a sexta, das 7h às 18h. É necessário apresentar documento de identificação do aluno ou do responsável.",
   },
   {
     categoria: "Horários",
@@ -43,7 +43,7 @@ const faqs = [
     categoria: "Horários",
     pergunta: "Qual o horário das aulas?",
     resposta:
-      "As aulas do turno matutino iniciam às 7h20 e terminam às 12h. O turno vespertino inicia às 13h20 e termina às 18h. Consulte o horário específico da sua turma na secretaria.",
+      "As aulas do turno matutino iniciam às 7h20 e terminam às 12h45. O turno vespertino inicia às 13h20 e termina às 18h35. Consulte o horário específico da sua turma na secretaria.",
   },
 ];
 
