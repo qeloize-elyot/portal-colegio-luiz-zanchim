@@ -1,36 +1,27 @@
 import React from "react";
 
-// 1. FUNDO DECORATIVO GLOBAL COM FORMAS ORGÂNICAS SUAVES
+// 1. FUNDO ARQUITETÔNICO CLEAN (LUZES DIFUSAS DE ESTÚDIO, SEM POLUIÇÃO VISUAL)
 export function BackgroundBlobs() {
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden opacity-40">
-      <svg className="absolute -top-24 -left-24 w-96 h-96 svg-float" viewBox="0 0 200 200">
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#f8fafc]">
+      {/* Grade geométrica ultra sutil apenas no topo */}
+      <svg
+        className="absolute inset-x-0 top-0 h-[550px] w-full opacity-[0.35] [mask-image:linear-gradient(to_bottom,white,transparent)]"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <defs>
-          <linearGradient id="lzGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#c45c26" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#e6b422" stopOpacity="0.14" />
-          </linearGradient>
+          <pattern id="cleanGrid" width="48" height="48" patternUnits="userSpaceOnUse">
+            <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#cbd5e1" strokeWidth="0.7" />
+          </pattern>
         </defs>
-        <path
-          fill="url(#lzGrad1)"
-          d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.5,90,-16.3,88.5,-0.9C87,14.6,81.4,29.2,73.1,42.2C64.8,55.2,53.8,66.6,40.3,74.1C26.8,81.6,10.8,85.2,-4.6,83.9C-20,82.6,-34.8,76.4,-48.3,68.2C-61.8,60,-74,49.8,-81.2,36.5C-88.4,23.2,-90.6,6.8,-88.1,-8.5C-85.6,-23.8,-78.4,-38,-68.1,-49.2C-57.8,-60.4,-44.4,-68.6,-30.5,-75.8C-16.6,-83,-2.2,-89.2,12.2,-87.8C26.6,-86.4,30.6,-83.6,44.7,-76.4Z"
-          transform="translate(100 100)"
-        />
+        <rect width="100%" height="100%" fill="url(#cleanGrid)" />
       </svg>
 
-      <svg className="absolute top-1/3 -right-28 w-[420px] h-[420px] svg-float-rev" viewBox="0 0 200 200">
-        <defs>
-          <linearGradient id="lzGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2f6f4e" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#1b365d" stopOpacity="0.14" />
-          </linearGradient>
-        </defs>
-        <path
-          fill="url(#lzGrad2)"
-          d="M39.9,-65.7C54.1,-60.5,69.5,-54,77.9,-42.2C86.3,-30.4,87.7,-13.3,85.4,2.8C83.1,18.9,77.1,34,67.7,46.7C58.3,59.4,45.5,69.7,30.9,75.8C16.3,81.9,-0.1,83.8,-15.8,80.7C-31.5,77.6,-46.5,69.5,-58.5,57.8C-70.5,46.1,-79.5,30.8,-82.9,14.1C-86.3,-2.6,-84.1,-20.7,-76.3,-35.1C-68.5,-49.5,-55.1,-60.2,-40.8,-65.4C-26.5,-70.6,-11.3,-70.3,1.8,-73.1C14.9,-75.9,25.7,-70.9,39.9,-65.7Z"
-          transform="translate(100 100)"
-        />
-      </svg>
+      {/* Luz difusa suave no canto superior esquerdo */}
+      <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-gradient-to-br from-blue-100/50 via-emerald-50/30 to-transparent blur-3xl" />
+
+      {/* Luz difusa suave no canto inferior direito */}
+      <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] rounded-full bg-gradient-to-tl from-orange-100/45 via-amber-50/30 to-transparent blur-3xl" />
     </div>
   );
 }
