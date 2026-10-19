@@ -7,14 +7,14 @@ import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
 
 const navItems = [
-  { href: "/", label: "Visão Geral" },
+  { href: "/", label: "Início" },
   { href: "/materiais", label: "Materiais" },
   { href: "/cardapio", label: "Cantina" },
   { href: "/gremio", label: "Grêmio" },
   { href: "/enquetes", label: "Enquetes" },
   { href: "/feira", label: "Feira" },
   { href: "/calculadora", label: "Calculadora" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/faq", label: "Dúvidas" },
   { href: "/sugestoes", label: "Ouvidoria" },
 ];
 
@@ -95,69 +95,56 @@ export default function Header() {
   const isAdmin = role === "ADMIN";
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs">
-      {/* Barra Institucional Superior */}
-      <div className="bg-[#0f2537] text-white/90 text-[11px] py-1.5 px-4 sm:px-8 border-b border-white/10">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Governo do Estado do Paraná · Colégio Estadual Cívico-Militar Vereador Luiz Zanchim</span>
-          </div>
-          <div className="hidden md:flex items-center gap-4 text-white/75">
-            <span>Ano Letivo {new Date().getFullYear()} · Sistema Trimestral</span>
-            {userEmail && (
-              <span className="text-amber-300 font-semibold">
-                {userEmail} ({role || "ALUNO"})
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Barra Principal Full-Width */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 h-[72px] flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200/70">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-20 flex items-center justify-between gap-6">
+        {/* Identidade do Colégio */}
         <Link
           href="/"
-          className="flex items-center gap-3 shrink-0 group"
+          className="flex items-center gap-3.5 shrink-0 group"
           onClick={() => setMenuOpen(false)}
         >
           {!logoError ? (
             <Image
               src="/logo.png"
               alt="Logo do Colégio"
-              width={48}
-              height={48}
-              className="rounded-full ring-2 ring-[#0f2537]/15 group-hover:ring-[#c45c26] transition-all"
+              width={46}
+              height={46}
+              className="rounded-full ring-2 ring-slate-200 group-hover:ring-[#c45c26] transition-all"
               priority
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-[#0f2537] text-white flex items-center justify-center text-xs font-bold">
+            <div className="w-11 h-11 rounded-full bg-[#0f2537] text-white flex items-center justify-center text-xs font-bold">
               CCM
             </div>
           )}
           <div className="leading-tight">
-            <p className="text-[15px] font-extrabold text-slate-900 tracking-tight">
-              Portal Escolar
-            </p>
-            <p className="text-[11px] font-medium text-slate-500">
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-extrabold text-slate-900 tracking-tight">
+                Portal Escolar
+              </span>
+              <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                CCMPR
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 font-medium">
               Colégio Vereador Luiz Zanchim
             </p>
           </div>
         </Link>
 
-        {/* Navegação Horizontal Profissional */}
-        <nav className="hidden xl:flex items-center gap-1 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/80">
+        {/* Navegação Central Clean */}
+        <nav className="hidden xl:flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/60">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
                   active
-                    ? "bg-[#0f2537] text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white"
+                    ? "bg-white text-slate-950 shadow-xs font-bold"
+                    : "text-slate-600 hover:text-slate-950"
                 }`}
               >
                 {item.label}
@@ -166,29 +153,35 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Ações da Direita */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Perfil e Ações */}
+        <div className="flex items-center gap-3 shrink-0">
           {isAdmin && (
             <Link
               href="/admin"
-              className="text-xs font-bold px-3.5 py-2 rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-2xs"
+              className="text-xs font-bold px-3.5 py-2 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              Painel Admin
+              Admin
             </Link>
           )}
+
           {userEmail ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
-            >
-              Sair
-            </button>
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="text-xs text-slate-500 font-medium max-w-[160px] truncate">
+                {userEmail.split("@")[0]}
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-xs font-semibold px-3.5 py-2 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              >
+                Sair
+              </button>
+            </div>
           ) : (
             <Link
               href="/login"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-xl bg-[#c45c26] text-white hover:bg-[#9a4520] transition-colors"
+              className="hidden sm:inline-flex items-center text-xs font-bold px-4 py-2 rounded-full bg-[#0f2537] text-white hover:bg-slate-800 transition-colors"
             >
               Entrar
             </Link>
@@ -196,7 +189,7 @@ export default function Header() {
 
           <button
             type="button"
-            className="xl:hidden inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50"
+            className="xl:hidden inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-full border border-slate-200 bg-white text-slate-700"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
           >
@@ -213,13 +206,13 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <div className="xl:hidden border-t border-slate-200 bg-white shadow-lg">
-          <nav className="max-w-[1600px] mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+        <div className="xl:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-lg">
+          <nav className="max-w-[1440px] mx-auto px-4 py-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-3.5 py-2.5 text-xs font-bold rounded-xl text-slate-700 hover:bg-slate-100"
+                className="px-4 py-2.5 text-xs font-semibold rounded-xl text-slate-700 hover:bg-slate-100"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -232,14 +225,14 @@ export default function Header() {
                   setMenuOpen(false);
                   handleLogout();
                 }}
-                className="px-3.5 py-2.5 text-xs font-bold rounded-xl text-left text-red-600 hover:bg-red-50"
+                className="px-4 py-2.5 text-xs font-semibold rounded-xl text-left text-red-600 hover:bg-red-50"
               >
                 Sair da conta
               </button>
             ) : (
               <Link
                 href="/login"
-                className="px-3.5 py-2.5 text-xs font-bold rounded-xl text-[#c45c26]"
+                className="px-4 py-2.5 text-xs font-bold rounded-xl text-[#c45c26]"
                 onClick={() => setMenuOpen(false)}
               >
                 Entrar
