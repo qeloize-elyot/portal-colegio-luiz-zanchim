@@ -1,33 +1,35 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function EntryAnimation() {
-  const [visible, setVisible] = useState(true);
+  const pathname = usePathname();
+  const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
-    // Mostra a animação apenas na primeira vez que abre o portal na sessão
-    const alreadyShown = sessionStorage.getItem("portal_zanchim_intro");
-    if (alreadyShown) {
+    // Roda a animação sempre que o usuário estiver na página inicial ("/")
+    if (pathname === "/") {
+      setVisible(true);
+      setLeaving(false);
+
+      const leaveTimer = setTimeout(() => {
+        setLeaving(true);
+      }, 1800);
+
+      const removeTimer = setTimeout(() => {
+        setVisible(false);
+      }, 2500);
+
+      return () => {
+        clearTimeout(leaveTimer);
+        clearTimeout(removeTimer);
+      };
+    } else {
       setVisible(false);
-      return;
     }
-
-    const leaveTimer = setTimeout(() => {
-      setLeaving(true);
-      sessionStorage.setItem("portal_zanchim_intro", "true");
-    }, 2100);
-
-    const removeTimer = setTimeout(() => {
-      setVisible(false);
-    }, 2800);
-
-    return () => {
-      clearTimeout(leaveTimer);
-      clearTimeout(removeTimer);
-    };
-  }, []);
+  }, [pathname]);
 
   if (!visible) return null;
 
@@ -66,7 +68,7 @@ export default function EntryAnimation() {
         .intro-logo { animation: introLogoPop 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .intro-text-1 { animation: introTextUp 0.6s ease-out 0.35s both; }
         .intro-text-2 { animation: introTextUp 0.6s ease-out 0.55s both; }
-        .intro-bar { animation: introProgress 1.9s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .intro-bar { animation: introProgress 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
       `}</style>
 
       {/* Brilho suave de fundo */}
@@ -74,7 +76,6 @@ export default function EntryAnimation() {
 
       {/* Brasão com Órbitas em SVG */}
       <div className="relative flex items-center justify-center w-56 h-56 mb-4 intro-logo">
-        {/* Anel Externo Girando */}
         <svg className="absolute inset-0 w-full h-full intro-spin" viewBox="0 0 240 240" fill="none">
           <circle
             cx="120"
@@ -91,31 +92,12 @@ export default function EntryAnimation() {
           <circle cx="12" cy="120" r="4" fill="#38BDF8" />
         </svg>
 
-        {/* Anel Interno Girando ao Contrário */}
         <svg className="absolute inset-3 w-[216px] h-[216px] intro-spin-rev" viewBox="0 0 220 220" fill="none">
-          <circle
-            cx="110"
-            cy="110"
-            r="88"
-            stroke="#FFFFFF"
-            strokeOpacity="0.2"
-            strokeWidth="1.8"
-          />
-          <path
-            d="M110 22 A88 88 0 0 1 198 110"
-            stroke="#FBBF24"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M110 198 A88 88 0 0 1 22 110"
-            stroke="#34D399"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
+          <circle cx="110" cy="110" r="88" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="1.8" />
+          <path d="M110 22 A88 88 0 0 1 198 110" stroke="#FBBF24" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M110 198 A88 88 0 0 1 22 110" stroke="#34D399" strokeWidth="3.5" strokeLinecap="round" />
         </svg>
 
-        {/* Moldura Limpa da Logo */}
         <div className="relative w-32 h-32 rounded-full bg-white p-2.5 shadow-2xl shadow-black/30 flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -126,7 +108,7 @@ export default function EntryAnimation() {
         </div>
       </div>
 
-      {/* Textos Surgindo */}
+      {/* Textos */}
       <div className="text-center px-6 space-y-2">
         <div className="intro-text-1 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-amber-300 text-[11px] font-bold uppercase tracking-widest">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
@@ -139,7 +121,7 @@ export default function EntryAnimation() {
         </h1>
       </div>
 
-      {/* Barra de Progresso de Abertura */}
+      {/* Barra de Progresso */}
       <div className="intro-text-2 mt-7 w-48 h-1.5 bg-white/15 rounded-full overflow-hidden">
         <div className="h-full bg-gradient-to-r from-amber-300 via-amber-400 to-emerald-400 rounded-full intro-bar" />
       </div>
