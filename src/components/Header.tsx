@@ -8,12 +8,16 @@ import { getSupabase } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/", label: "Início" },
+  { href: "/laboratorios", label: "Labs" },
+  { href: "/horarios", label: "Horários" },
+  { href: "/recados", label: "Recados" },
+  { href: "/aviso-ausencia", label: "Ausência" },
   { href: "/materiais", label: "Materiais" },
   { href: "/cardapio", label: "Cantina" },
   { href: "/gremio", label: "Grêmio" },
   { href: "/enquetes", label: "Enquetes" },
   { href: "/feira", label: "Feira" },
-  { href: "/calculadora", label: "Calculadora" },
+  { href: "/calculadora", label: "Notas" },
   { href: "/faq", label: "Dúvidas" },
   { href: "/sugestoes", label: "Ouvidoria" },
 ];
@@ -96,7 +100,6 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFFDF9] border-b-[3px] border-[#0F1E36] shadow-[0_4px_0px_#0F1E36]">
-      {/* Tirinha superior estilo régua/marca-página escolar */}
       <div className="h-1.5 w-full flex">
         <div className="flex-1 bg-[#0F1E36]" />
         <div className="flex-1 bg-[#F4B41A]" />
@@ -105,7 +108,6 @@ export default function Header() {
       </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-20 flex items-center justify-between gap-4">
-        {/* Identidade do Colégio estilo Adesivo */}
         <Link
           href="/"
           className="flex items-center gap-3.5 shrink-0 group"
@@ -144,15 +146,14 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* Navegação Central estilo Abas de Caderno */}
-        <nav className="hidden xl:flex items-center gap-1 bg-[#F7F3E8] p-1.5 rounded-2xl border-2 border-[#0F1E36] shadow-[3px_3px_0px_#0F1E36]">
+        <nav className="hidden 2xl:flex items-center gap-0.5 bg-[#F7F3E8] p-1.5 rounded-2xl border-2 border-[#0F1E36] shadow-[3px_3px_0px_#0F1E36] max-w-[720px] overflow-x-auto">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${
+                className={`px-2.5 py-1.5 rounded-xl text-[11px] font-black transition-all whitespace-nowrap ${
                   active
                     ? "bg-[#F4B41A] text-[#0F1E36] border-2 border-[#0F1E36] shadow-[2px_2px_0px_#0F1E36] -translate-y-0.5"
                     : "text-[#0F1E36]/80 hover:text-[#0F1E36] hover:bg-[#FFFDF9]"
@@ -164,7 +165,6 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Crachá do Usuário e Ações */}
         <div className="flex items-center gap-2.5 shrink-0">
           {isAdmin && (
             <Link
@@ -179,7 +179,6 @@ export default function Header() {
 
           {userEmail ? (
             <div className="hidden sm:flex items-center gap-2">
-              {/* Crachá Escolar em SVG */}
               <div className="flex items-center gap-2 bg-[#EBF3FF] border-2 border-[#0F1E36] rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#0F1E36]">
                 <svg className="w-4 h-4 text-[#2554C7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <circle cx="12" cy="8" r="4" />
@@ -206,10 +205,9 @@ export default function Header() {
             </Link>
           )}
 
-          {/* Botão Menu Mobile */}
           <button
             type="button"
-            className="xl:hidden inline-flex items-center gap-1.5 text-xs font-black px-3.5 py-2 rounded-xl border-2 border-[#0F1E36] bg-[#F4B41A] text-[#0F1E36] shadow-[2px_2px_0px_#0F1E36]"
+            className="2xl:hidden inline-flex items-center gap-1.5 text-xs font-black px-3.5 py-2 rounded-xl border-2 border-[#0F1E36] bg-[#F4B41A] text-[#0F1E36] shadow-[2px_2px_0px_#0F1E36]"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
           >
@@ -225,9 +223,8 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Gaveta Mobile Estilo Caderno */}
       {menuOpen && (
-        <div className="xl:hidden border-t-[3px] border-[#0F1E36] bg-[#F7F3E8] px-4 py-5">
+        <div className="2xl:hidden border-t-[3px] border-[#0F1E36] bg-[#F7F3E8] px-4 py-5">
           <nav className="max-w-[1440px] mx-auto grid grid-cols-2 sm:grid-cols-3 gap-2.5">
             {navItems.map((item) => {
               const active = pathname === item.href;
