@@ -4,9 +4,27 @@ import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
 import { useRole } from "@/lib/useRole";
 
-const HORARIOS = ["1ª aula", "2ª aula", "3ª aula", "4ª aula", "5ª aula"];
+/** 6 aulas oficiais (manhã e tarde) */
+const HORARIOS = [
+  "1ª aula",
+  "2ª aula",
+  "3ª aula",
+  "4ª aula",
+  "5ª aula",
+  "6ª aula",
+] as const;
+
+const HORARIO_DETALHE: Record<string, { manha: string; tarde: string }> = {
+  "1ª aula": { manha: "07:30–08:20", tarde: "13:20–14:10" },
+  "2ª aula": { manha: "08:20–09:10", tarde: "14:10–15:00" },
+  "3ª aula": { manha: "09:10–10:00", tarde: "15:00–15:50" },
+  "4ª aula": { manha: "10:15–11:05", tarde: "16:05–16:55" },
+  "5ª aula": { manha: "11:05–11:55", tarde: "16:55–17:45" },
+  "6ª aula": { manha: "11:55–12:45", tarde: "17:45–18:35" },
+};
+
 const TURNOS = ["MANHA", "TARDE"] as const;
-const LABS = ["Lab 1", "Lab 2"] as const;
+const LABS = ["Lab 1", "Lab 2", "Lab 3"] as const;
 
 type Reserva = {
   id: string;
@@ -142,7 +160,7 @@ export default function LaboratoriosPage() {
   if (roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F3E8]">
-        <p className="font-bold text-[#0F1E36]">Carregando...</p>
+        <p className="font-medium text-[#0F1E36]">Carregando...</p>
       </div>
     );
   }
@@ -158,14 +176,15 @@ export default function LaboratoriosPage() {
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-8">
         <div className="mb-8">
-          <span className="text-[11px] font-black uppercase tracking-widest text-[#2554C7] bg-[#EBF3FF] border-2 border-[#0F1E36] px-3 py-1 rounded-lg shadow-[2px_2px_0_#0F1E36]">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#2554C7] bg-[#EBF3FF] border-2 border-[#0F1E36] px-3 py-1 rounded-lg shadow-[2px_2px_0_#0F1E36]">
             Gestão escolar
           </span>
-          <h1 className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">
+          <h1 className="mt-3 text-3xl sm:text-4xl font-semibold font-serif tracking-tight">
             Laboratórios de Informática
           </h1>
           <p className="mt-2 text-sm text-[#0F1E36]/75 font-medium max-w-2xl">
-            Consulta e agendamento semanal. Zero conflitos: o sistema impede reservas duplicadas no mesmo lab, turno e horário.
+            A escola possui <strong>3 laboratórios</strong>. Grade semanal com 6 aulas por turno.
+            Alunos consultam a disponibilidade; <strong>somente professores e direção</strong> fazem reservas.
           </p>
         </div>
 
@@ -178,11 +197,11 @@ export default function LaboratoriosPage() {
               d.setDate(d.getDate() - 7);
               setSemanaBase(d);
             }}
-            className="px-4 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-black text-sm shadow-[2px_2px_0_#0F1E36]"
+            className="px-4 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-semibold text-sm shadow-[2px_2px_0_#0F1E36]"
           >
             ← Semana anterior
           </button>
-          <span className="font-black text-sm px-3 py-2 bg-[#FFF8DB] border-2 border-[#0F1E36] rounded-xl">
+          <span className="font-semibold text-sm px-3 py-2 bg-[#FFF8DB] border-2 border-[#0F1E36] rounded-xl">
             {labelDia(dias[0])} — {labelDia(dias[4])}
           </span>
           <button
@@ -192,14 +211,14 @@ export default function LaboratoriosPage() {
               d.setDate(d.getDate() + 7);
               setSemanaBase(d);
             }}
-            className="px-4 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-black text-sm shadow-[2px_2px_0_#0F1E36]"
+            className="px-4 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-semibold text-sm shadow-[2px_2px_0_#0F1E36]"
           >
             Próxima semana →
           </button>
           <select
             value={labFiltro}
             onChange={(e) => setLabFiltro(e.target.value)}
-            className="px-3 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-bold text-sm"
+            className="px-3 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-medium text-sm"
           >
             {LABS.map((l) => (
               <option key={l} value={l}>
@@ -210,7 +229,7 @@ export default function LaboratoriosPage() {
           <select
             value={turnoFiltro}
             onChange={(e) => setTurnoFiltro(e.target.value)}
-            className="px-3 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-bold text-sm"
+            className="px-3 py-2 rounded-xl border-2 border-[#0F1E36] bg-white font-medium text-sm"
           >
             <option value="MANHA">Manhã</option>
             <option value="TARDE">Tarde</option>
@@ -219,12 +238,12 @@ export default function LaboratoriosPage() {
 
         {/* Visão semanal */}
         <div className="overflow-x-auto mb-10 rounded-2xl border-[3px] border-[#0F1E36] bg-white shadow-[6px_6px_0_#0F1E36]">
-          <table className="w-full text-sm min-w-[640px]">
+          <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr className="bg-[#0F1E36] text-white">
-                <th className="p-3 text-left font-black">Horário</th>
+                <th className="p-3 text-left font-semibold">Horário</th>
                 {dias.map((d) => (
-                  <th key={fmt(d)} className="p-3 text-center font-black">
+                  <th key={fmt(d)} className="p-3 text-center font-semibold">
                     {labelDia(d)}
                   </th>
                 ))}
@@ -233,7 +252,14 @@ export default function LaboratoriosPage() {
             <tbody>
               {HORARIOS.map((h) => (
                 <tr key={h} className="border-t-2 border-[#0F1E36]/15">
-                  <td className="p-3 font-black bg-[#F7F3E8]">{h}</td>
+                  <td className="p-3 font-semibold bg-[#F7F3E8]">
+                    <div>{h}</div>
+                    <div className="text-[10px] font-medium opacity-60 mt-0.5">
+                      {turnoFiltro === "MANHA"
+                        ? HORARIO_DETALHE[h].manha
+                        : HORARIO_DETALHE[h].tarde}
+                    </div>
+                  </td>
                   {dias.map((d) => {
                     const cell = ocupado(fmt(d), h);
                     return (
@@ -242,7 +268,7 @@ export default function LaboratoriosPage() {
                           <span className="text-xs opacity-50">...</span>
                         ) : cell ? (
                           <div className="bg-[#EBF3FF] border-2 border-[#2554C7] rounded-lg p-2 text-left">
-                            <div className="font-black text-xs">{cell.professor_nome}</div>
+                            <div className="font-semibold text-xs">{cell.professor_nome}</div>
                             <div className="text-[11px] opacity-80">
                               {cell.turma || "—"} · {cell.disciplina || "—"}
                             </div>
@@ -257,7 +283,7 @@ export default function LaboratoriosPage() {
                             )}
                           </div>
                         ) : (
-                          <span className="text-[11px] text-green-700 font-bold">Livre</span>
+                          <span className="text-[11px] text-green-700 font-semibold">Livre</span>
                         )}
                       </td>
                     );
@@ -271,7 +297,7 @@ export default function LaboratoriosPage() {
         {/* Meus horários */}
         {isProfessor && (
           <div className="mb-10">
-            <h2 className="text-xl font-black mb-3">Meus horários (esta semana)</h2>
+            <h2 className="text-xl font-semibold font-serif mb-3">Minhas reservas (esta semana)</h2>
             {minhas.length === 0 ? (
               <p className="text-sm opacity-70">Nenhuma reserva sua nesta semana.</p>
             ) : (
@@ -281,14 +307,14 @@ export default function LaboratoriosPage() {
                     key={r.id}
                     className="flex flex-wrap items-center justify-between gap-2 bg-white border-2 border-[#0F1E36] rounded-xl px-4 py-3 shadow-[2px_2px_0_#0F1E36]"
                   >
-                    <span className="font-bold text-sm">
+                    <span className="font-medium text-sm">
                       {r.data} · {r.turno === "MANHA" ? "Manhã" : "Tarde"} · {r.horario} · {r.lab}
                       {r.turma ? ` · ${r.turma}` : ""}
                     </span>
                     <button
                       type="button"
                       onClick={() => cancelar(r.id, r.professor_id)}
-                      className="text-xs font-black text-red-600 underline"
+                      className="text-xs font-semibold text-red-600 underline"
                     >
                       Cancelar
                     </button>
@@ -299,14 +325,14 @@ export default function LaboratoriosPage() {
           </div>
         )}
 
-        {/* Formulário de reserva */}
+        {/* Formulário de reserva — só professor/admin */}
         {isProfessor ? (
           <div className="bg-white border-[3px] border-[#0F1E36] rounded-2xl p-6 shadow-[6px_6px_0_#E04F33] max-w-xl">
-            <h2 className="text-xl font-black mb-4">Nova reserva</h2>
+            <h2 className="text-xl font-semibold font-serif mb-4">Nova reserva</h2>
             <form onSubmit={reservar} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-black mb-1">Data</label>
+                  <label className="block text-xs font-bold mb-1">Data</label>
                   <input
                     type="date"
                     required
@@ -316,7 +342,7 @@ export default function LaboratoriosPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black mb-1">Lab</label>
+                  <label className="block text-xs font-bold mb-1">Laboratório</label>
                   <select
                     value={form.lab}
                     onChange={(e) => setForm({ ...form, lab: e.target.value })}
@@ -330,7 +356,7 @@ export default function LaboratoriosPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-black mb-1">Turno</label>
+                  <label className="block text-xs font-bold mb-1">Turno</label>
                   <select
                     value={form.turno}
                     onChange={(e) => setForm({ ...form, turno: e.target.value })}
@@ -344,7 +370,7 @@ export default function LaboratoriosPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-black mb-1">Horário</label>
+                  <label className="block text-xs font-bold mb-1">Aula</label>
                   <select
                     value={form.horario}
                     onChange={(e) => setForm({ ...form, horario: e.target.value })}
@@ -352,7 +378,7 @@ export default function LaboratoriosPage() {
                   >
                     {HORARIOS.map((h) => (
                       <option key={h} value={h}>
-                        {h}
+                        {h} ({form.turno === "MANHA" ? HORARIO_DETALHE[h].manha : HORARIO_DETALHE[h].tarde})
                       </option>
                     ))}
                   </select>
@@ -360,49 +386,48 @@ export default function LaboratoriosPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-black mb-1">Turma</label>
+                  <label className="block text-xs font-bold mb-1">Turma</label>
                   <input
                     value={form.turma}
                     onChange={(e) => setForm({ ...form, turma: e.target.value })}
-                    placeholder="Ex: 1º A"
+                    placeholder="Ex: 8º C"
                     className="w-full border-2 border-[#0F1E36] rounded-xl px-3 py-2 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black mb-1">Disciplina</label>
+                  <label className="block text-xs font-bold mb-1">Disciplina</label>
                   <input
                     value={form.disciplina}
                     onChange={(e) => setForm({ ...form, disciplina: e.target.value })}
-                    placeholder="Ex: Informática"
+                    placeholder="Ex: Robótica"
                     className="w-full border-2 border-[#0F1E36] rounded-xl px-3 py-2 text-sm"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-black mb-1">Observação</label>
+                <label className="block text-xs font-bold mb-1">Observação</label>
                 <input
                   value={form.observacao}
                   onChange={(e) => setForm({ ...form, observacao: e.target.value })}
                   className="w-full border-2 border-[#0F1E36] rounded-xl px-3 py-2 text-sm"
                 />
               </div>
-              {msg && (
-                <p className="text-sm font-bold text-[#E04F33]">{msg}</p>
-              )}
+              {msg && <p className="text-sm font-semibold text-[#E04F33]">{msg}</p>}
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-[#2554C7] text-white font-black border-2 border-[#0F1E36] shadow-[3px_3px_0_#0F1E36]"
+                className="w-full py-3 rounded-xl bg-[#2554C7] text-white font-semibold border-2 border-[#0F1E36] shadow-[3px_3px_0_#0F1E36]"
               >
                 Confirmar reserva
               </button>
             </form>
-            <p className="mt-3 text-[11px] opacity-70">
-              Dica: use o botão de impressão do navegador (Ctrl+P) na visão semanal para fixar a grade no mural físico.
-            </p>
           </div>
         ) : (
-          <div className="bg-[#FFF8DB] border-2 border-[#0F1E36] rounded-xl p-4 text-sm font-medium">
-            Alunos visualizam a grade. Professores e direção reservam e cancelam.
+          <div className="bg-[#FFF8DB] border-2 border-[#0F1E36] rounded-xl p-4 text-sm font-medium max-w-xl">
+            <p className="font-semibold mb-1">Acesso restrito</p>
+            <p className="opacity-80">
+              Alunos podem consultar a grade dos 3 laboratórios. Reservas e cancelamentos são exclusivos de
+              professores e da direção.
+            </p>
           </div>
         )}
       </div>

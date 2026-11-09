@@ -54,7 +54,7 @@ export default function AvisoAusenciaPage() {
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!isProfessor || !userId) {
-      setMsg("Apenas professores podem registrar aviso de ausência.");
+      setMsg("Apenas professores e direção podem registrar aviso de ausência.");
       return;
     }
     setMsg("");
@@ -90,7 +90,7 @@ export default function AvisoAusenciaPage() {
   if (roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F3E8]">
-        <p className="font-bold">Carregando...</p>
+        <p className="font-medium">Carregando...</p>
       </div>
     );
   }
@@ -105,23 +105,24 @@ export default function AvisoAusenciaPage() {
       }}
     >
       <div className="max-w-[900px] mx-auto px-4 sm:px-8 pt-8">
-        <span className="text-[11px] font-black uppercase tracking-widest text-[#E04F33] bg-[#FFF0E5] border-2 border-[#0F1E36] px-3 py-1 rounded-lg shadow-[2px_2px_0_#0F1E36]">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-[#E04F33] bg-[#FFF0E5] border-2 border-[#0F1E36] px-3 py-1 rounded-lg shadow-[2px_2px_0_#0F1E36]">
           Comunicação docente
         </span>
-        <h1 className="mt-3 text-3xl font-black">Aviso de Ausência ou Atraso</h1>
+        <h1 className="mt-3 text-3xl font-semibold font-serif">Aviso de Ausência ou Atraso</h1>
         <p className="mt-2 text-sm opacity-75 font-medium">
-          Canal direto para professores notificarem faltas, atrasos e enviarem atestados. A equipe pedagógica organiza substituições com agilidade.
+          Canal exclusivo para <strong>professores</strong> notificarem faltas e atrasos (manhã ou tarde) e
+          enviarem atestado. Alunos não registram ausência de docentes por aqui.
         </p>
 
-        {isProfessor && (
+        {isProfessor ? (
           <form
             onSubmit={enviar}
             className="mt-8 bg-white border-[3px] border-[#0F1E36] rounded-2xl p-6 shadow-[6px_6px_0_#E04F33] space-y-3"
           >
-            <h2 className="text-lg font-black">Registrar aviso</h2>
+            <h2 className="text-lg font-semibold font-serif">Registrar meu aviso</h2>
             <div className="grid sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-black mb-1">Tipo</label>
+                <label className="block text-xs font-bold mb-1">Tipo</label>
                 <select
                   value={form.tipo}
                   onChange={(e) => setForm({ ...form, tipo: e.target.value })}
@@ -133,7 +134,7 @@ export default function AvisoAusenciaPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-black mb-1">Data</label>
+                <label className="block text-xs font-bold mb-1">Data</label>
                 <input
                   type="date"
                   required
@@ -143,7 +144,7 @@ export default function AvisoAusenciaPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-black mb-1">Turno</label>
+                <label className="block text-xs font-bold mb-1">Turno</label>
                 <select
                   value={form.turno}
                   onChange={(e) => setForm({ ...form, turno: e.target.value })}
@@ -151,12 +152,11 @@ export default function AvisoAusenciaPage() {
                 >
                   <option value="MANHA">Manhã</option>
                   <option value="TARDE">Tarde</option>
-                  <option value="INTEGRAL">Integral</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="block text-xs font-black mb-1">Motivo (opcional)</label>
+              <label className="block text-xs font-bold mb-1">Motivo (opcional)</label>
               <textarea
                 value={form.motivo}
                 onChange={(e) => setForm({ ...form, motivo: e.target.value })}
@@ -165,7 +165,7 @@ export default function AvisoAusenciaPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-black mb-1">Link do atestado (Drive/PDF)</label>
+              <label className="block text-xs font-bold mb-1">Link do atestado (Drive/PDF)</label>
               <input
                 value={form.atestado_url}
                 onChange={(e) => setForm({ ...form, atestado_url: e.target.value })}
@@ -173,19 +173,29 @@ export default function AvisoAusenciaPage() {
                 className="w-full border-2 border-[#0F1E36] rounded-xl px-3 py-2 text-sm"
               />
             </div>
-            {msg && <p className="text-sm font-bold text-[#15803D]">{msg}</p>}
+            {msg && <p className="text-sm font-semibold text-[#15803D]">{msg}</p>}
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-[#E04F33] text-white font-black border-2 border-[#0F1E36] shadow-[3px_3px_0_#0F1E36]"
+              className="w-full py-3 rounded-xl bg-[#E04F33] text-white font-semibold border-2 border-[#0F1E36] shadow-[3px_3px_0_#0F1E36]"
             >
               Enviar aviso
             </button>
           </form>
+        ) : (
+          <div className="mt-8 bg-[#FFF8DB] border-2 border-[#0F1E36] rounded-xl p-4 text-sm font-medium">
+            <p className="font-semibold mb-1">Área restrita a professores e direção</p>
+            <p className="opacity-80">
+              Este canal é só para o próprio docente avisar falta/atraso. Alunos não justificam ausência de
+              professores por aqui.
+            </p>
+          </div>
         )}
 
         <div className="mt-10">
-          <h2 className="text-xl font-black mb-4">Avisos recentes</h2>
-          {loading ? (
+          <h2 className="text-xl font-semibold font-serif mb-4">Avisos recentes</h2>
+          {!isProfessor && role !== "ADMIN" ? (
+            <p className="text-sm opacity-70">Lista visível apenas para professores e administração.</p>
+          ) : loading ? (
             <p className="text-sm">Carregando...</p>
           ) : avisos.length === 0 ? (
             <p className="text-sm opacity-70">Nenhum aviso registrado.</p>
@@ -197,15 +207,15 @@ export default function AvisoAusenciaPage() {
                   className="bg-white border-2 border-[#0F1E36] rounded-xl p-4 shadow-[2px_2px_0_#0F1E36]"
                 >
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#FFF0E5] border border-[#0F1E36]">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-[#FFF0E5] border border-[#0F1E36]">
                       {a.tipo}
                     </span>
-                    <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#EBF3FF] border border-[#0F1E36]">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-[#EBF3FF] border border-[#0F1E36]">
                       {a.status}
                     </span>
-                    <span className="text-xs font-bold opacity-70">{a.data}</span>
+                    <span className="text-xs font-medium opacity-70">{a.data}</span>
                   </div>
-                  <p className="font-black text-sm">{a.professor_nome}</p>
+                  <p className="font-semibold text-sm">{a.professor_nome}</p>
                   <p className="text-sm opacity-80">
                     {a.turno === "MANHA" ? "Manhã" : a.turno === "TARDE" ? "Tarde" : a.turno || "—"}
                     {a.motivo ? ` · ${a.motivo}` : ""}
@@ -215,7 +225,7 @@ export default function AvisoAusenciaPage() {
                       href={a.atestado_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-bold text-[#2554C7] underline"
+                      className="text-xs font-semibold text-[#2554C7] underline"
                     >
                       Ver atestado
                     </a>
@@ -225,14 +235,14 @@ export default function AvisoAusenciaPage() {
                       <button
                         type="button"
                         onClick={() => atualizarStatus(a.id, "CIENTE")}
-                        className="text-xs font-black px-3 py-1 rounded-lg bg-[#E6F8EF] border-2 border-[#0F1E36]"
+                        className="text-xs font-semibold px-3 py-1 rounded-lg bg-[#E6F8EF] border-2 border-[#0F1E36]"
                       >
                         Marcar ciente
                       </button>
                       <button
                         type="button"
                         onClick={() => atualizarStatus(a.id, "SUBSTITUIDO")}
-                        className="text-xs font-black px-3 py-1 rounded-lg bg-[#FFF8DB] border-2 border-[#0F1E36]"
+                        className="text-xs font-semibold px-3 py-1 rounded-lg bg-[#FFF8DB] border-2 border-[#0F1E36]"
                       >
                         Substituído
                       </button>
