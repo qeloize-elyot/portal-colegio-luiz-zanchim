@@ -1,27 +1,6 @@
 import Link from "next/link";
-import { SchoolLogoShowcase } from "@/components/SvgDecorations";
 
-const services = [
-  {
-    href: "/materiais",
-    title: "Materiais de Apoio",
-    description: "Apostilas, slides e listas de exercícios por série, turma e disciplina.",
-    tag: "Estudos",
-    cardBg: "bg-[#EBF3FF]",
-    tagBg: "bg-[#2554C7] text-white",
-    icon: "book",
-    featured: true,
-  },
-  {
-    href: "/cardapio",
-    title: "Cardápio da Cantina",
-    description: "Programação semanal de lanches do recreio e refeições principais.",
-    tag: "Rotina",
-    cardBg: "bg-[#FFF0E5]",
-    tagBg: "bg-[#E04F33] text-white",
-    icon: "apple",
-    featured: true,
-  },
+const featured = [
   {
     href: "/biblioteca",
     title: "Biblioteca",
@@ -29,102 +8,195 @@ const services = [
     tag: "Acervo",
     cardBg: "bg-[#E8F0FE]",
     tagBg: "bg-[#1D4ED8] text-white",
-    icon: "library",
-    featured: true,
   },
+  {
+    href: "/materiais",
+    title: "Materiais de Apoio",
+    description: "Apostilas, slides e listas de exercícios por série e disciplina.",
+    tag: "Estudos",
+    cardBg: "bg-[#EBF3FF]",
+    tagBg: "bg-[#2554C7] text-white",
+  },
+  {
+    href: "/cardapio",
+    title: "Cardápio da Cantina",
+    description: "Programação semanal de lanches e refeições.",
+    tag: "Rotina",
+    cardBg: "bg-[#FFF0E5]",
+    tagBg: "bg-[#E04F33] text-white",
+  },
+];
+
+const services = [
   {
     href: "/horarios",
     title: "Horários e Calendário",
-    description: "Grades da manhã e tarde, calendário 2026 e horários dos professores.",
+    description: "Grades manhã/tarde, calendário 2026 e horários dos professores.",
     tag: "Rotina",
     cardBg: "bg-[#FFF7ED]",
     tagBg: "bg-[#C2410C] text-white",
-    icon: "clock",
-    featured: false,
   },
   {
     href: "/laboratorios",
     title: "Laboratórios",
-    description: "Reserva dos 3 labs de informática (professores) e consulta da grade.",
-    tag: "Infraestrutura",
+    description: "3 labs · 6 aulas · reserva só para professores/admin.",
+    tag: "Infra",
     cardBg: "bg-[#F0FDF4]",
     tagBg: "bg-[#15803D] text-white",
-    icon: "lab",
-    featured: false,
   },
   {
     href: "/recados",
     title: "Recados e Eventos",
-    description: "Mural oficial de recados, eventos e vídeos da direção.",
+    description: "Mural oficial de recados, eventos e vídeos.",
     tag: "Comunicados",
     cardBg: "bg-[#FEF3C7]",
     tagBg: "bg-[#B45309] text-white",
-    icon: "megaphone",
-    featured: false,
+  },
+  {
+    href: "/aviso-ausencia",
+    title: "Aviso de Ausência",
+    description: "Professores registram falta ou atraso (manhã/tarde).",
+    tag: "Staff",
+    cardBg: "bg-[#FDF2F8]",
+    tagBg: "bg-[#BE185D] text-white",
+  },
+  {
+    href: "/calculadora",
+    title: "Minhas Notas",
+    description: "Adicione matérias, notas por trimestre e média automática.",
+    tag: "Estudo",
+    cardBg: "bg-[#E6F7F8]",
+    tagBg: "bg-[#0F766E] text-white",
   },
   {
     href: "/gremio",
     title: "Painel do Grêmio",
-    description: "Comunicados oficiais, gincanas, eventos culturais e avisos estudantis.",
+    description: "Comunicados, gincanas e eventos estudantis.",
     tag: "Comunidade",
     cardBg: "bg-[#FFF8DB]",
     tagBg: "bg-[#D97706] text-white",
-    icon: "megaphone",
-    featured: false,
   },
   {
     href: "/enquetes",
-    title: "Enquetes Escolares",
-    description: "Participe das votações ativas e ajude nas decisões da escola.",
-    tag: "Voz Ativa",
+    title: "Enquetes",
+    description: "Participe das votações da escola.",
+    tag: "Voz ativa",
     cardBg: "bg-[#F2EEFF]",
     tagBg: "bg-[#5B3FD9] text-white",
-    icon: "vote",
-    featured: false,
   },
   {
     href: "/feira",
     title: "Feira de Trocas",
-    description: "Espaço solidário para doação, troca ou venda de livros e uniformes.",
-    tag: "Sustentável",
+    description: "Doação e troca de livros e uniformes.",
+    tag: "Solidário",
     cardBg: "bg-[#E6F8EF]",
     tagBg: "bg-[#15803D] text-white",
-    icon: "swap",
-    featured: false,
-  },
-  {
-    href: "/calculadora",
-    title: "Calculadora de Notas",
-    description: "Simule suas notas dos 3 trimestres e acompanhe a meta de 180 pontos.",
-    tag: "Planejamento",
-    cardBg: "bg-[#E6F7F8]",
-    tagBg: "bg-[#0F766E] text-white",
-    icon: "calc",
-    featured: false,
   },
   {
     href: "/faq",
     title: "Dúvidas Frequentes",
-    description: "Normas de uniforme, horários de aulas, atestados e secretaria.",
-    tag: "Guia Rápido",
+    description: "Uniforme, horários, atestados e secretaria.",
+    tag: "Guia",
     cardBg: "bg-[#FDECEB]",
     tagBg: "bg-[#B91C1C] text-white",
-    icon: "help",
-    featured: false,
   },
   {
     href: "/sugestoes",
     title: "Ouvidoria Anônima",
-    description: "Canal confidencial com moderação por IA para sugestões e críticas.",
-    tag: "Escuta Segura",
+    description: "Canal confidencial de sugestões e reclamações.",
+    tag: "Escuta",
     cardBg: "bg-[#E9F7EF]",
     tagBg: "bg-[#1B5E4A] text-white",
-    icon: "chat",
-    featured: false,
   },
 ];
 
-// NOTE: file truncated in this push attempt - full content follows in next approach
+function Card({
+  href,
+  title,
+  description,
+  tag,
+  cardBg,
+  tagBg,
+  large,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  tag: string;
+  cardBg: string;
+  tagBg: string;
+  large?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`${cardBg} border-[3px] border-[#0F1E36] rounded-2xl p-5 shadow-[4px_4px_0_#0F1E36] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#0F1E36] transition-all block ${large ? "sm:col-span-1" : ""}`}
+    >
+      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border border-[#0F1E36] ${tagBg}`}>
+        {tag}
+      </span>
+      <h3 className="mt-3 text-lg font-semibold font-serif text-[#0F1E36]">{title}</h3>
+      <p className="mt-1.5 text-sm text-[#0F1E36]/75 leading-snug">{description}</p>
+      <span className="mt-3 inline-block text-xs font-semibold text-[#0F1E36]">Abrir →</span>
+    </Link>
+  );
+}
+
 export default function Home() {
-  return <div>Carregando portal...</div>;
+  return (
+    <div
+      className="min-h-screen text-[#0F1E36] pb-16"
+      style={{
+        backgroundColor: "#F7F3E8",
+        backgroundImage: "radial-gradient(#0F1E36 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
+      }}
+    >
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-8 pt-8">
+        <section className="rounded-[28px] bg-[#0F1E36] text-[#FFFDF9] border-[3px] border-[#0F1E36] shadow-[8px_8px_0_#E04F33] px-6 py-10 sm:px-10">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F4B41A]">
+            Colégio Vereador Luiz Zanchim
+          </p>
+          <h1 className="mt-2 text-3xl sm:text-4xl font-semibold font-serif leading-tight">
+            Portal Escolar
+          </h1>
+          <p className="mt-3 text-sm sm:text-base text-white/80 max-w-xl">
+            Horários, laboratórios, biblioteca, notas, materiais e canais da escola em um só lugar.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Link
+              href="/biblioteca"
+              className="px-4 py-2.5 rounded-xl bg-[#F4B41A] text-[#0F1E36] text-sm font-semibold border-2 border-[#FFFDF9]"
+            >
+              Ir para Biblioteca
+            </Link>
+            <Link
+              href="/horarios"
+              className="px-4 py-2.5 rounded-xl bg-transparent text-white text-sm font-semibold border-2 border-white/40"
+            >
+              Ver horários
+            </Link>
+          </div>
+        </section>
+
+        <h2 className="mt-10 text-xl font-semibold font-serif">Destaques</h2>
+        <div className="mt-4 grid sm:grid-cols-3 gap-4">
+          {featured.map((s) => (
+            <Card key={s.href} {...s} large />
+          ))}
+        </div>
+
+        <h2 className="mt-10 text-xl font-semibold font-serif">Todos os serviços</h2>
+        <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {services.map((s) => (
+            <Card key={s.href} {...s} />
+          ))}
+        </div>
+
+        <p className="mt-10 text-center text-xs opacity-50">
+          Use o menu ☰ no topo para acessar qualquer página · Portal de uso interno
+        </p>
+      </div>
+    </div>
+  );
 }
