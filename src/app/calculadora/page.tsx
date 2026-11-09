@@ -15,7 +15,7 @@ type Materia = {
 };
 
 const STORAGE_KEY = "portal-zanchim-notas-v1";
-const META_ANUAL = 180; // mínimo para aprovação (média 60)
+const META_ANUAL = 180;
 const MAX_TRIM = 100;
 
 const MATERIAS_SUGERIDAS = [
@@ -60,17 +60,20 @@ function somaDe(notas: NotasTrimestre): number {
 function statusMateria(notas: NotasTrimestre) {
   const soma = somaDe(notas);
   const preenchidos = [notas.t1, notas.t2, notas.t3].filter((v) => v !== null).length;
-  if (preenchidos === 0) return { label: "Sem notas", cor: "bg-slate-100 text-slate-600", tipo: "vazio" as const };
+  if (preenchidos === 0)
+    return { label: "Sem notas", cor: "bg-slate-100 text-slate-600", tipo: "vazio" as const };
   if (preenchidos < 3) {
     const falta = META_ANUAL - soma;
-    if (falta <= 0) return { label: "Já passou", cor: "bg-emerald-100 text-emerald-800", tipo: "ok" as const };
+    if (falta <= 0)
+      return { label: "Já passou", cor: "bg-emerald-100 text-emerald-800", tipo: "ok" as const };
     return {
       label: `Faltam ${falta.toFixed(0)} pts`,
       cor: "bg-amber-100 text-amber-900",
       tipo: "andamento" as const,
     };
   }
-  if (soma >= META_ANUAL) return { label: "Aprovado", cor: "bg-emerald-100 text-emerald-800", tipo: "ok" as const };
+  if (soma >= META_ANUAL)
+    return { label: "Aprovado", cor: "bg-emerald-100 text-emerald-800", tipo: "ok" as const };
   return { label: "Recuperação", cor: "bg-red-100 text-red-800", tipo: "risco" as const };
 }
 
@@ -80,7 +83,6 @@ export default function MinhasNotasPage() {
   const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
   const [carregado, setCarregado] = useState(false);
 
-  // Carrega do localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -94,7 +96,6 @@ export default function MinhasNotasPage() {
     setCarregado(true);
   }, []);
 
-  // Salva
   useEffect(() => {
     if (!carregado) return;
     try {
@@ -123,9 +124,7 @@ export default function MinhasNotasPage() {
   function atualizarNota(id: string, trim: "t1" | "t2" | "t3", valor: string) {
     const num = parseNota(valor);
     setMaterias((prev) =>
-      prev.map((m) =>
-        m.id === id ? { ...m, notas: { ...m.notas, [trim]: num } } : m
-      )
+      prev.map((m) => (m.id === id ? { ...m, notas: { ...m.notas, [trim]: num } } : m))
     );
   }
 
@@ -172,8 +171,12 @@ export default function MinhasNotasPage() {
     }
     if (preenchidos === 2) {
       const falta = META_ANUAL - soma;
-      if (falta <= 0) return "Você já tem pontos suficientes para ser aprovado nesta matéria!";
-      if (falta > MAX_TRIM) return `Atenção: precisa de ${falta.toFixed(0)} pts no 3º trimestre (acima do máximo). Foque na recuperação.";
+      if (falta <= 0) {
+        return "Você já tem pontos suficientes para ser aprovado nesta matéria!";
+      }
+      if (falta > MAX_TRIM) {
+        return `Atenção: precisa de ${falta.toFixed(0)} pts no 3º trimestre (acima do máximo). Foque na recuperação.`;
+      }
       return `No 3º trimestre você precisa de pelo menos ${falta.toFixed(0)} pontos para fechar a matéria.`;
     }
     if (soma >= META_ANUAL) return "Matéria fechada com sucesso. Parabéns!";
@@ -195,11 +198,10 @@ export default function MinhasNotasPage() {
         </span>
         <h1 className="mt-3 text-3xl font-semibold font-serif">Minhas Notas</h1>
         <p className="mt-2 text-sm opacity-75 max-w-xl">
-          Anote as notas de cada matéria, acompanhe a média do trimestre e veja o que ainda falta para fechar o ano (mínimo 180 pontos / média 60).
-          Tudo fica salvo só no seu aparelho.
+          Anote as notas de cada matéria, acompanhe a média do trimestre e veja o que ainda falta para
+          fechar o ano (mínimo 180 pontos / média 60). Tudo fica salvo só no seu aparelho.
         </p>
 
-        {/* Resumo geral */}
         {resumo && (
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-white border-2 border-[#0F1E36] rounded-2xl p-4 shadow-[3px_3px_0_#0F1E36]">
@@ -223,7 +225,6 @@ export default function MinhasNotasPage() {
           </div>
         )}
 
-        {/* Adicionar matéria */}
         <div className="mt-8 bg-white border-[3px] border-[#0F1E36] rounded-2xl p-5 shadow-[4px_4px_0_#0F1E36]">
           <h2 className="font-semibold font-serif text-lg mb-3">Adicionar matéria</h2>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -271,7 +272,6 @@ export default function MinhasNotasPage() {
           )}
         </div>
 
-        {/* Lista de matérias */}
         <div className="mt-8 space-y-4">
           {materias.length === 0 && (
             <div className="text-center py-12 bg-white/60 border-2 border-dashed border-[#0F1E36]/30 rounded-2xl">
@@ -340,7 +340,6 @@ export default function MinhasNotasPage() {
                     ))}
                   </div>
 
-                  {/* Barra de progresso */}
                   <div className="mt-4">
                     <div className="h-2.5 rounded-full bg-[#E8E4D9] overflow-hidden border border-[#0F1E36]/20">
                       <div
