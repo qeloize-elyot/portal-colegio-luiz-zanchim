@@ -10,6 +10,7 @@ const navItems = [
   { href: "/", label: "Início", group: "principal" },
   { href: "/horarios", label: "Horários", group: "principal" },
   { href: "/laboratorios", label: "Laboratórios", group: "principal" },
+  { href: "/biblioteca", label: "Biblioteca", group: "principal" },
   { href: "/recados", label: "Recados", group: "principal" },
   { href: "/aviso-ausencia", label: "Aviso de Ausência", group: "principal" },
   { href: "/calculadora", label: "Minhas Notas", group: "estudo" },
@@ -91,7 +92,6 @@ export default function Header() {
     }
   }, []);
 
-  // Fecha o menu ao mudar de página
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
@@ -198,7 +198,6 @@ export default function Header() {
             </Link>
           )}
 
-          {/* Botão hamburger — sempre visível */}
           <button
             type="button"
             className="inline-flex items-center justify-center w-11 h-11 rounded-xl border-2 border-[#0F1E36] bg-[#F4B41A] text-[#0F1E36] shadow-[2px_2px_0px_#0F1E36] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
@@ -217,7 +216,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Painel do menu (sempre via hamburger) */}
       {menuOpen && (
         <div className="border-t-[3px] border-[#0F1E36] bg-[#F7F3E8] px-4 py-6 shadow-inner">
           <div className="max-w-[900px] mx-auto">
