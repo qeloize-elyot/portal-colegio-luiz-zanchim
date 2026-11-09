@@ -7,19 +7,26 @@ import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
 
 const navItems = [
-  { href: "/", label: "Início" },
-  { href: "/laboratorios", label: "Labs" },
-  { href: "/horarios", label: "Horários" },
-  { href: "/recados", label: "Recados" },
-  { href: "/aviso-ausencia", label: "Ausência" },
-  { href: "/materiais", label: "Materiais" },
-  { href: "/cardapio", label: "Cantina" },
-  { href: "/gremio", label: "Grêmio" },
-  { href: "/enquetes", label: "Enquetes" },
-  { href: "/feira", label: "Feira" },
-  { href: "/calculadora", label: "Notas" },
-  { href: "/faq", label: "Dúvidas" },
-  { href: "/sugestoes", label: "Ouvidoria" },
+  { href: "/", label: "Início", group: "principal" },
+  { href: "/horarios", label: "Horários", group: "principal" },
+  { href: "/laboratorios", label: "Laboratórios", group: "principal" },
+  { href: "/recados", label: "Recados", group: "principal" },
+  { href: "/aviso-ausencia", label: "Aviso de Ausência", group: "principal" },
+  { href: "/calculadora", label: "Minhas Notas", group: "estudo" },
+  { href: "/materiais", label: "Materiais", group: "estudo" },
+  { href: "/cardapio", label: "Cantina", group: "escola" },
+  { href: "/gremio", label: "Grêmio", group: "escola" },
+  { href: "/enquetes", label: "Enquetes", group: "escola" },
+  { href: "/feira", label: "Feira", group: "escola" },
+  { href: "/faq", label: "Dúvidas", group: "ajuda" },
+  { href: "/sugestoes", label: "Ouvidoria", group: "ajuda" },
+];
+
+const groups = [
+  { id: "principal", title: "Portal" },
+  { id: "estudo", title: "Estudo" },
+  { id: "escola", title: "Escola" },
+  { id: "ajuda", title: "Ajuda" },
 ];
 
 export default function Header() {
@@ -84,6 +91,11 @@ export default function Header() {
     }
   }, []);
 
+  // Fecha o menu ao mudar de página
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   if (pathname?.startsWith("/login")) {
     return null;
   }
@@ -107,19 +119,19 @@ export default function Header() {
         <div className="flex-1 bg-[#1B5E4A]" />
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-20 flex items-center justify-between gap-4">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-[72px] flex items-center justify-between gap-4">
         <Link
           href="/"
           className="flex items-center gap-3.5 shrink-0 group"
           onClick={() => setMenuOpen(false)}
         >
-          <div className="relative p-1 rounded-2xl bg-[#FFF8DB] border-2 border-[#0F1E36] shadow-[3px_3px_0px_#0F1E36] group-hover:-rotate-3 group-hover:scale-105 transition-transform">
+          <div className="relative p-1 rounded-2xl bg-[#FFF8DB] border-2 border-[#0F1E36] shadow-[3px_3px_0px_#0F1E36] group-hover:-rotate-2 group-hover:scale-[1.03] transition-transform">
             {!logoError ? (
               <Image
                 src="/logo.png"
                 alt="Logo do Colégio"
-                width={42}
-                height={42}
+                width={40}
+                height={40}
                 className="rounded-xl object-contain"
                 priority
                 onError={() => setLogoError(true)}
@@ -133,43 +145,24 @@ export default function Header() {
 
           <div className="leading-tight">
             <div className="flex items-center gap-2">
-              <span className="text-base font-black text-[#0F1E36] tracking-tight group-hover:text-[#E04F33] transition-colors">
+              <span className="text-[15px] sm:text-base font-semibold text-[#0F1E36] tracking-tight group-hover:text-[#E04F33] transition-colors font-serif">
                 Portal Escolar
               </span>
-              <span className="hidden sm:inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#F4B41A] text-[#0F1E36] border border-[#0F1E36] shadow-[1.5px_1.5px_0px_#0F1E36]">
+              <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#F4B41A] text-[#0F1E36] border border-[#0F1E36]">
                 CCMPR
               </span>
             </div>
-            <p className="text-xs text-[#0F1E36]/75 font-bold">
+            <p className="text-[11px] sm:text-xs text-[#0F1E36]/70 font-medium">
               Colégio Vereador Luiz Zanchim
             </p>
           </div>
         </Link>
 
-        <nav className="hidden 2xl:flex items-center gap-0.5 bg-[#F7F3E8] p-1.5 rounded-2xl border-2 border-[#0F1E36] shadow-[3px_3px_0px_#0F1E36] max-w-[720px] overflow-x-auto">
-          {navItems.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`px-2.5 py-1.5 rounded-xl text-[11px] font-black transition-all whitespace-nowrap ${
-                  active
-                    ? "bg-[#F4B41A] text-[#0F1E36] border-2 border-[#0F1E36] shadow-[2px_2px_0px_#0F1E36] -translate-y-0.5"
-                    : "text-[#0F1E36]/80 hover:text-[#0F1E36] hover:bg-[#FFFDF9]"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
         <div className="flex items-center gap-2.5 shrink-0">
           {isAdmin && (
             <Link
               href="/admin"
-              className="text-xs font-black px-3.5 py-2 rounded-xl bg-[#E6F8EF] text-[#15803D] border-2 border-[#0F1E36] shadow-[2px_2px_0px_#0F1E36] hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center gap-1.5"
+              className="hidden sm:inline-flex text-xs font-semibold px-3 py-2 rounded-xl bg-[#E6F8EF] text-[#15803D] border-2 border-[#0F1E36] shadow-[2px_2px_0px_#0F1E36] hover:translate-x-[1px] hover:translate-y-[1px] transition-all items-center gap-1.5"
               onClick={() => setMenuOpen(false)}
             >
               <span className="w-2 h-2 rounded-full bg-[#15803D] animate-pulse" />
@@ -178,20 +171,20 @@ export default function Header() {
           )}
 
           {userEmail ? (
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <div className="flex items-center gap-2 bg-[#EBF3FF] border-2 border-[#0F1E36] rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#0F1E36]">
                 <svg className="w-4 h-4 text-[#2554C7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <circle cx="12" cy="8" r="4" />
                   <path d="M5 20c1.5-4 12.5-4 14 0" strokeLinecap="round" />
                 </svg>
-                <span className="text-xs text-[#0F1E36] font-black max-w-[140px] truncate">
+                <span className="text-xs text-[#0F1E36] font-semibold max-w-[120px] truncate">
                   {userEmail.split("@")[0]}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="text-xs font-black px-3.5 py-2 rounded-xl border-2 border-[#0F1E36] bg-[#FFF0E5] text-[#E04F33] shadow-[2px_2px_0px_#0F1E36] hover:bg-[#E04F33] hover:text-white transition-colors"
+                className="text-xs font-semibold px-3 py-2 rounded-xl border-2 border-[#0F1E36] bg-[#FFF0E5] text-[#E04F33] shadow-[2px_2px_0px_#0F1E36] hover:bg-[#E04F33] hover:text-white transition-colors"
               >
                 Sair
               </button>
@@ -199,71 +192,103 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-xl bg-[#E04F33] text-white border-2 border-[#0F1E36] shadow-[3px_3px_0px_#0F1E36] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+              className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl bg-[#E04F33] text-white border-2 border-[#0F1E36] shadow-[3px_3px_0px_#0F1E36] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
             >
               Entrar →
             </Link>
           )}
 
+          {/* Botão hamburger — sempre visível */}
           <button
             type="button"
-            className="2xl:hidden inline-flex items-center gap-1.5 text-xs font-black px-3.5 py-2 rounded-xl border-2 border-[#0F1E36] bg-[#F4B41A] text-[#0F1E36] shadow-[2px_2px_0px_#0F1E36]"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-xl border-2 border-[#0F1E36] bg-[#F4B41A] text-[#0F1E36] shadow-[2px_2px_0px_#0F1E36] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
+            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={menuOpen}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {menuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
               ) : (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
-            Menu
           </button>
         </div>
       </div>
 
+      {/* Painel do menu (sempre via hamburger) */}
       {menuOpen && (
-        <div className="2xl:hidden border-t-[3px] border-[#0F1E36] bg-[#F7F3E8] px-4 py-5">
-          <nav className="max-w-[1440px] mx-auto grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-            {navItems.map((item) => {
-              const active = pathname === item.href;
-              return (
+        <div className="border-t-[3px] border-[#0F1E36] bg-[#F7F3E8] px-4 py-6 shadow-inner">
+          <div className="max-w-[900px] mx-auto">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {groups.map((g) => (
+                <div key={g.id}>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#0F1E36]/55 mb-2.5 px-1">
+                    {g.title}
+                  </p>
+                  <nav className="flex flex-col gap-1.5">
+                    {navItems
+                      .filter((item) => item.group === g.id)
+                      .map((item) => {
+                        const active = pathname === item.href;
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`px-3.5 py-2.5 text-sm rounded-xl border-2 border-[#0F1E36] transition-all ${
+                              active
+                                ? "bg-[#F4B41A] text-[#0F1E36] font-semibold shadow-[2px_2px_0px_#0F1E36]"
+                                : "bg-[#FFFDF9] text-[#0F1E36] hover:bg-[#FFF8DB] font-medium"
+                            }`}
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            {item.label}
+                          </Link>
+                        );
+                      })}
+                  </nav>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 pt-5 border-t border-[#0F1E36]/15 flex flex-wrap items-center gap-3">
+              {isAdmin && (
                 <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-4 py-2.5 text-xs font-black rounded-xl border-2 border-[#0F1E36] transition-all ${
-                    active
-                      ? "bg-[#F4B41A] text-[#0F1E36] shadow-[2px_2px_0px_#0F1E36]"
-                      : "bg-[#FFFDF9] text-[#0F1E36] hover:bg-[#FFF8DB]"
-                  }`}
+                  href="/admin"
+                  className="sm:hidden px-4 py-2.5 text-sm font-semibold rounded-xl bg-[#E6F8EF] text-[#15803D] border-2 border-[#0F1E36]"
                   onClick={() => setMenuOpen(false)}
                 >
-                  {item.label}
+                  Painel Admin
                 </Link>
-              );
-            })}
-            {userEmail ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  handleLogout();
-                }}
-                className="px-4 py-2.5 text-xs font-black rounded-xl text-left bg-[#FDECEB] text-[#B91C1C] border-2 border-[#0F1E36] shadow-[2px_2px_0px_#0F1E36]"
-              >
-                Sair da conta
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="px-4 py-2.5 text-xs font-black rounded-xl bg-[#E04F33] text-white border-2 border-[#0F1E36] shadow-[2px_2px_0px_#0F1E36] text-center"
-                onClick={() => setMenuOpen(false)}
-              >
-                Entrar
-              </Link>
-            )}
-          </nav>
+              )}
+              {userEmail ? (
+                <>
+                  <span className="md:hidden text-xs text-[#0F1E36]/70 font-medium">
+                    {userEmail.split("@")[0]}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="md:hidden px-4 py-2.5 text-sm font-semibold rounded-xl bg-[#FDECEB] text-[#B91C1C] border-2 border-[#0F1E36]"
+                  >
+                    Sair da conta
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="md:hidden px-4 py-2.5 text-sm font-semibold rounded-xl bg-[#E04F33] text-white border-2 border-[#0F1E36]"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Entrar
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </header>

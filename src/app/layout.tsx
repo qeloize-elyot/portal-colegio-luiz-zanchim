@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,9 +35,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} h-full`}>
+    <html lang="pt-BR" className={`${sourceSans.variable} ${sourceSerif.variable} h-full`}>
       <body
-        className="min-h-full flex flex-col text-[#0F1E36] antialiased relative selection:bg-[#F4B41A] selection:text-[#0F1E36]"
+        className="min-h-full flex flex-col text-[#0F1E36] antialiased relative selection:bg-[#F4B41A] selection:text-[#0F1E36] font-sans"
         style={{
           backgroundColor: "#F7F3E8",
           backgroundImage: "radial-gradient(#0F1E36 1px, transparent 1px)",
