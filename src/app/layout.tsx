@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="pt-BR" className={`${sourceSans.variable} ${sourceSerif.variable} h-full`}>
@@ -44,7 +45,6 @@ export default function RootLayout({
           backgroundSize: "24px 24px",
         }}
       >
-        {/* Margem lateral estilo folha de caderno (visível em ecrãs grandes) */}
         <div
           aria-hidden="true"
           className="hidden 2xl:block pointer-events-none fixed top-0 bottom-0 left-12 w-[2px] bg-[#E04F33]/35 z-0"
