@@ -1,25 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getSupabase } from "@/lib/supabase/client";
 import { useRole } from "@/lib/useRole";
+import {
+  getEnquetes,
+  addEnquete,
+  getMeusVotos,
+  votarEnquete,
+  type DemoEnquete,
+} from "@/lib/demo-auth";
 import {
   PageHeroBanner,
   EnquetesIllustration,
   EmptyStateIllustration,
-  WaveDivider,
 } from "@/components/SvgDecorations";
 
-type Enquete = {
-  id: string;
-  pergunta: string;
-  opcoes: string[];
-  ativa: boolean;
-};
-
 export default function EnquetesPage() {
-  const { isAdmin, userId, loading: roleLoading } = useRole();
-  const [lista, setLista] = useState<Enquete[]>([]);
+  const { isAdmin, loading: roleLoading } = useRole();
+  const [lista, setLista] = useState<DemoEnquete[]>([]);
   const [votados, setVotados] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [pergunta, setPergunta] = useState("");
@@ -27,186 +25,133 @@ export default function EnquetesPage() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
 
-  async function carregar() {
-    try {
-      const supabase = getSupabase();
-      if (userId) {
-        const { data: meusVotos } = await supabase
-          .from("enquete_votos")
-          .select("enquete_id, opcao_index")
-          .eq("user_id", userId);
-        const map: Record<string, number> = {};
-        (meusVotos || []).forEach((v) => {
-          map[v.enquete_id] = v.opcao_index;
-        });
-        setVotados(map);
-      }
-      const { data } = await supabase
-        .from("enquetes")
-        .select("*")
-        .eq("ativa", true)
-        .order("created_at", { ascending: false });
-      setLista(data || []);
-    } finally {
-      setLoading(false);
-    }
+  function carregar() {
+    setLista(getEnquetes());
+    setVotados(getMeusVotos());
+    setLoading(false);
   }
 
   useEffect(() => {
     if (!roleLoading) carregar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roleLoading, userId]);
+  }, [roleLoading]);
 
-  async function criar(e: React.FormEvent) {
+  function criar(e: React.FormEvent) {
     e.preventDefault();
-    if (!userId) {
-      setErro("Faça login novamente.");
-      return;
-    }
     setEnviando(true);
     setErro("");
-    const opcoes = opcoesTxt
-      .split("\n")
-      .map((o) => o.trim())
-      .filter(Boolean);
-    if (opcoes.length < 2) {
-      setErro("Coloque pelo menos 2 opções (uma por linha).");
+    try {
+      const opcoes = opcoesTxt.split("\n").map((o) => o.trim()).filter(Boolean);
+      if (!pergunta.trim() || opcoes.length < 2) {
+        setErro("Informe a pergunta e pelo menos 2 opções.");
+        setEnviando(false);
+        return;
+      }
+      addEnquete(pergunta.trim(), opcoes);
+      setPergunta("");
+      setOpcoesTxt("Sim\nNão\nTalvez");
+      carregar();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro ao criar enquete.");
+    } finally {
       setEnviando(false);
-      return;
     }
-    const supabase = getSupabase();
-    const { error } = await supabase.from("enquetes").insert({
-      pergunta: pergunta.trim(),
-      opcoes,
-      ativa: true,
-      created_by: userId,
-    });
-    setEnviando(false);
-    if (error) {
-      setErro(error.message);
-      return;
-    }
-    setPergunta("");
-    setOpcoesTxt("Sim\nNão\nTalvez");
-    await carregar();
   }
 
-  async function votar(enqueteId: string, opcaoIndex: number) {
-    if (!userId || votados[enqueteId] !== undefined) return;
-    const supabase = getSupabase();
-    const { error } = await supabase.from("enquete_votos").insert({
-      enquete_id: enqueteId,
-      user_id: userId,
-      opcao_index: opcaoIndex,
-    });
-    if (!error) {
-      setVotados((prev) => ({ ...prev, [enqueteId]: opcaoIndex }));
-    }
+  function votar(enqueteId: string, index: number) {
+    if (votados[enqueteId] !== undefined) return;
+    votarEnquete(enqueteId, index);
+    carregar();
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-4 py-10">
       <PageHeroBanner
-        badge="Voz Ativa Estudantil"
-        title="Enquetes da Escola"
-        subtitle="Participe das votações e ajude a construir decisões sobre projetos, eventos e melhorias do nosso colégio."
-        accentColor="#c45c26"
-        softBg="#fdf0e6"
+        badge="Participação Estudantil"
+        title="Enquetes"
+        subtitle="Vote nas enquetes ativas e ajude a decidir ações da escola e do grêmio."
+        accentColor="#7c3aed"
+        softBg="#f3e8ff"
         illustration={<EnquetesIllustration />}
       />
 
       {isAdmin && (
-        <form onSubmit={criar} className="bg-card border border-border rounded-3xl p-6 mb-8 space-y-3 shadow-2xs">
-          <h2 className="font-bold text-sm text-primary">Criar nova enquete</h2>
+        <form onSubmit={criar} className="mb-10 bg-card border border-border rounded-3xl p-6 space-y-4">
+          <h2 className="font-bold text-lg">Criar nova enquete</h2>
           <input
-            required
             value={pergunta}
             onChange={(e) => setPergunta(e.target.value)}
+            required
+            className="w-full border border-border rounded-xl px-3 py-2 text-sm"
             placeholder="Pergunta da enquete"
-            className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
           />
-          <div>
-            <label className="block text-xs font-medium text-muted mb-1">
-              Opções (uma por linha)
-            </label>
-            <textarea
-              required
-              value={opcoesTxt}
-              onChange={(e) => setOpcoesTxt(e.target.value)}
-              rows={4}
-              className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm bg-background/50"
-            />
-          </div>
-          {erro && <p className="text-sm text-red-700">{erro}</p>}
-          <button
-            type="submit"
-            disabled={enviando}
-            className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-dark disabled:opacity-60"
-          >
-            {enviando ? "Criando..." : "Criar enquete"}
+          <textarea
+            value={opcoesTxt}
+            onChange={(e) => setOpcoesTxt(e.target.value)}
+            rows={4}
+            className="w-full border border-border rounded-xl px-3 py-2 text-sm"
+            placeholder="Uma opção por linha"
+          />
+          {erro && <div className="text-sm text-red-700 bg-red-50 border border-red-200 px-3 py-2 rounded-xl">{erro}</div>}
+          <button type="submit" disabled={enviando} className="bg-primary text-white font-semibold px-5 py-2.5 rounded-xl disabled:opacity-60">
+            {enviando ? "Criando..." : "Publicar enquete"}
           </button>
         </form>
       )}
 
       {loading ? (
-        <p className="text-muted text-sm">Carregando...</p>
+        <p className="text-sm text-muted">Carregando...</p>
       ) : lista.length === 0 ? (
-        <EmptyStateIllustration label="Nenhuma enquete ativa neste momento." />
+        <div className="text-center py-12">
+          <EmptyStateIllustration />
+          <p className="mt-4 text-sm text-muted">Nenhuma enquete ativa.</p>
+        </div>
       ) : (
-        <div className="space-y-5">
-          {lista.map((eq) => (
-            <div
-              key={eq.id}
-              className="bg-card border border-border rounded-3xl p-6 relative overflow-hidden shadow-2xs"
-            >
-              <svg
-                className="pointer-events-none absolute right-3 top-3 w-20 h-20 opacity-10"
-                viewBox="0 0 64 64"
-                fill="none"
-              >
-                <rect x="10" y="34" width="10" height="20" rx="3" fill="#c45c26" />
-                <rect x="26" y="18" width="10" height="36" rx="3" fill="#2f6f4e" />
-                <rect x="42" y="26" width="10" height="28" rx="3" fill="#e6b422" />
-              </svg>
-
-              <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-primary bg-primary-soft px-2.5 py-0.5 rounded-full mb-2">
-                Votação Aberta
-              </span>
-              <h2 className="font-bold text-lg text-foreground mb-4">{eq.pergunta}</h2>
-
-              {votados[eq.id] !== undefined ? (
-                <div className="bg-secondary-soft border border-secondary/30 rounded-2xl px-4 py-3 flex items-center gap-2.5 text-sm text-secondary">
-                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>
-                    Voto registrado com sucesso:{" "}
-                    <strong>{eq.opcoes[votados[eq.id]]}</strong>
-                  </span>
-                </div>
-              ) : (
-                <div className="space-y-2.5">
-                  {eq.opcoes.map((op, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => votar(eq.id, idx)}
-                      className="w-full text-left px-4 py-3 border border-border rounded-2xl hover:border-primary hover:bg-primary-soft/50 text-sm font-medium transition-all flex items-center justify-between group"
-                    >
-                      <span>{op}</span>
-                      <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity font-semibold">
-                        Confirmar voto →
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="space-y-6">
+          {lista.map((enq) => {
+            const total = enq.votos.reduce((a, b) => a + b, 0);
+            const jaVotou = votados[enq.id] !== undefined;
+            return (
+              <article key={enq.id} className="bg-card border border-border rounded-3xl p-6">
+                <h3 className="font-bold text-lg mb-4">{enq.pergunta}</h3>
+                <ul className="space-y-3">
+                  {enq.opcoes.map((op, i) => {
+                    const votos = enq.votos[i] || 0;
+                    const pct = total > 0 ? Math.round((votos / total) * 100) : 0;
+                    const escolhida = votados[enq.id] === i;
+                    return (
+                      <li key={i}>
+                        <button
+                          type="button"
+                          disabled={jaVotou}
+                          onClick={() => votar(enq.id, i)}
+                          className={`w-full text-left border rounded-xl px-4 py-3 ${
+                            escolhida ? "border-primary bg-primary/10" : "border-border"
+                          } ${jaVotou ? "cursor-default" : "cursor-pointer hover:bg-background/80"}`}
+                        >
+                          <div className="flex justify-between items-center gap-3 mb-1.5">
+                            <span className="text-sm font-medium">{op}</span>
+                            {jaVotou && (
+                              <span className="text-xs text-muted">{votos} · {pct}%</span>
+                            )}
+                          </div>
+                          {jaVotou && (
+                            <div className="h-1.5 bg-background rounded-full overflow-hidden">
+                              <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {jaVotou && (
+                  <p className="mt-3 text-xs text-muted">Você já votou. Total: {total} voto{total !== 1 ? "s" : ""}.</p>
+                )}
+              </article>
+            );
+          })}
         </div>
       )}
-
-      <WaveDivider color="#c45c26" />
     </div>
   );
 }
