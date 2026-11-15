@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getSupabase } from "@/lib/supabase/client";
+import { getDemoUser, clearDemoUser } from "@/lib/demo-auth";
 
 const navItems = [
   { href: "/", label: "Início", group: "principal" },
@@ -38,57 +38,13 @@ export default function Header() {
   const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
-    async function checkUser() {
-      try {
-        const supabase = getSupabase();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          setUserEmail(null);
-          setRole(null);
-          return;
-        }
-
-        setUserEmail(user.email ?? null);
-
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (profile?.role) {
-          setRole(profile.role);
-        } else {
-          const metaRole = (user.user_metadata?.role as string) || "ALUNO";
-          await supabase.from("profiles").upsert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || "",
-            role: metaRole,
-          });
-          setRole(metaRole);
-        }
-      } catch {
-        setUserEmail(null);
-        setRole(null);
-      }
-    }
-
-    checkUser();
-
-    try {
-      const supabase = getSupabase();
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange(() => {
-        checkUser();
-      });
-      return () => subscription.unsubscribe();
-    } catch {
-      return;
+    const user = getDemoUser();
+    if (user) {
+      setUserEmail(user.email);
+      setRole(user.role);
+    } else {
+      setUserEmail(null);
+      setRole(null);
     }
   }, []);
 
@@ -100,9 +56,8 @@ export default function Header() {
     return null;
   }
 
-  async function handleLogout() {
-    const supabase = getSupabase();
-    await supabase.auth.signOut();
+  function handleLogout() {
+    clearDemoUser();
     setUserEmail(null);
     setRole(null);
     window.location.href = "/login";
