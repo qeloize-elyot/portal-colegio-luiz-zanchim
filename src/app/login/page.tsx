@@ -1,19 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { getSupabase } from "@/lib/supabase/client";
 import { SchoolLogoShowcase } from "@/components/SvgDecorations";
-
-function isEmailGov(email: string) {
-  return email.trim().toLowerCase().endsWith(".gov.br");
-}
+import { setDemoUser, isValidRole, type AppRole } from "@/lib/demo-auth";
 
 export default function LoginPage() {
   const [modo, setModo] = useState<"login" | "cadastro">("login");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
-  const [role, setRole] = useState("ALUNO");
+  const [role, setRole] = useState<AppRole>("ALUNO");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
 
@@ -23,47 +19,28 @@ export default function LoginPage() {
     setCarregando(true);
 
     try {
-      if (!isEmailGov(email)) {
-        setErro("Apenas e-mails institucionais (.gov.br) podem acessar este portal.");
+      // Modo demonstração: qualquer e-mail e senha funcionam
+      if (!email.trim() || senha.length < 3) {
+        setErro("Preencha e-mail e senha (mínimo 3 caracteres).");
         setCarregando(false);
         return;
       }
 
-      const supabase = getSupabase();
+      // Pequeno delay só pra parecer real
+      await new Promise((r) => setTimeout(r, 600));
 
-      if (modo === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim().toLowerCase(),
-          password: senha,
-        });
-        if (error) throw error;
-        window.location.href = "/";
-        return;
-      }
+      const finalRole: AppRole =
+        modo === "cadastro" && isValidRole(role) ? role : "ALUNO";
 
-      const { data, error } = await supabase.auth.signUp({
+      setDemoUser({
         email: email.trim().toLowerCase(),
-        password: senha,
-        options: {
-          data: {
-            full_name: nome,
-            role: role,
-          },
-        },
+        fullName: nome.trim() || email.split("@")[0],
+        role: finalRole,
       });
-      if (error) throw error;
 
-      if (data.session) {
-        window.location.href = "/";
-        return;
-      }
-
-      alert("Conta criada! Agora faça login com o mesmo e-mail e senha.");
-      setModo("login");
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Erro ao autenticar.";
-      setErro(message);
-    } finally {
+      window.location.href = "/";
+    } catch {
+      setErro("Erro ao entrar. Tente novamente.");
       setCarregando(false);
     }
   }
@@ -81,14 +58,13 @@ export default function LoginPage() {
   const titulo = modo === "login" ? "Bem-vindo de volta" : "Criar sua conta";
   const subtitulo =
     modo === "login"
-      ? "Entre com seu e-mail institucional (@escola.pr.gov.br)"
-      : "Use um e-mail institucional terminado em .gov.br";
+      ? "Entre com qualquer e-mail e senha (modo demonstração)"
+      : "Escolha o tipo de conta para a demonstração";
   const textoBotao =
     carregando ? "Aguarde..." : modo === "login" ? "Entrar no portal" : "Criar conta";
 
   return (
     <div className="min-h-screen bg-[#faf6f1] flex flex-col lg:flex-row relative overflow-hidden">
-      {/* Lado Esquerdo: Identidade Institucional com a Logo Oficial da Escola */}
       <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 bg-gradient-to-br from-[#1b365d] via-[#1e4640] to-[#2f6f4e] text-white relative overflow-hidden">
         <svg
           className="pointer-events-none absolute -top-20 -left-20 w-96 h-96 opacity-15"
@@ -119,30 +95,41 @@ export default function LoginPage() {
           <p className="mt-4 text-white/85 text-[15px] leading-relaxed">
             Materiais de apoio, cardápio da cantina, grêmio estudantil, enquetes, feira de trocas e ouvidoria em um ambiente seguro para a nossa escola.
           </p>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            {["Seguro", "Institucional", "Demonstração"].map((tag) => (
+              <span
+                key={tag}
+                className="text-[11px] font-semibold bg-white/10 border border-white/20 px-3 py-1 rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Lado Direito: Formulário de Acesso */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-10 relative z-10">
-        <div className="w-full max-w-[410px]">
-          <div className="lg:hidden mb-6 text-center flex flex-col items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logo.png"
-              alt="Logo do Colégio"
-              className="w-20 h-20 rounded-full shadow-md mb-3 ring-2 ring-[#c45c26]/30 bg-white p-1"
-            />
-            <p className="text-base font-bold text-[#2c2416]">Portal Escolar</p>
-            <p className="text-xs font-medium text-[#6b5b4b]">Colégio Cívico-Militar Vereador Luiz Zanchim</p>
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden flex flex-col items-center mb-8">
+            <SchoolLogoShowcase size={88} />
+            <p className="mt-3 text-sm font-semibold text-[#1b365d] text-center">
+              Colégio Vereador Luiz Zanchim
+            </p>
           </div>
 
-          <div className="bg-white border border-[#e8d5c4] rounded-3xl p-7 sm:p-8 shadow-sm">
-            <h1 className="text-xl font-bold text-[#2c2416] mb-1">{titulo}</h1>
-            <p className="text-sm text-[#6b5b4b] mb-6">{subtitulo}</p>
+          <div className="bg-white border border-[#e8d5c4] rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="mb-6">
+              <span className="inline-block text-[10px] font-bold uppercase tracking-widest bg-[#fff3e0] text-[#c45c26] border border-[#f0d0b0] px-2.5 py-0.5 rounded-full mb-2">
+                Modo Demonstração
+              </span>
+              <h1 className="text-2xl font-extrabold text-[#2c2416]">{titulo}</h1>
+              <p className="text-sm text-[#6b5b4b] mt-1">{subtitulo}</p>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {modo === "cadastro" && (
-                <div className="space-y-4">
+                <>
                   <div>
                     <label className="block text-sm font-medium text-[#2c2416] mb-1">
                       Nome completo
@@ -151,37 +138,41 @@ export default function LoginPage() {
                       type="text"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
-                      required
+                      placeholder="Seu nome"
                       className="w-full border border-[#e8d5c4] rounded-xl px-3.5 py-2.5 text-sm bg-[#faf6f1] focus:outline-none focus:ring-2 focus:ring-[#c45c26]/40"
                     />
                   </div>
+
                   <div>
                     <label className="block text-sm font-medium text-[#2c2416] mb-1">
-                      Você é
+                      Tipo de conta (demonstração)
                     </label>
                     <select
                       value={role}
-                      onChange={(e) => setRole(e.target.value)}
+                      onChange={(e) => setRole(e.target.value as AppRole)}
                       className="w-full border border-[#e8d5c4] rounded-xl px-3.5 py-2.5 text-sm bg-[#faf6f1] focus:outline-none focus:ring-2 focus:ring-[#c45c26]/40"
                     >
                       <option value="ALUNO">Aluno</option>
                       <option value="PROFESSOR">Professor</option>
-                      <option value="ADMIN">Administração / Direção</option>
+                      <option value="ADMIN">Administrador</option>
                     </select>
+                    <p className="text-[11px] text-[#6b5b4b] mt-1">
+                      Escolha o perfil que deseja demonstrar na apresentação.
+                    </p>
                   </div>
-                </div>
+                </>
               )}
 
               <div>
                 <label className="block text-sm font-medium text-[#2c2416] mb-1">
-                  E-mail institucional
+                  E-mail
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="seu.nome@escola.pr.gov.br"
+                  placeholder="qualquer@email.com"
                   className="w-full border border-[#e8d5c4] rounded-xl px-3.5 py-2.5 text-sm bg-[#faf6f1] focus:outline-none focus:ring-2 focus:ring-[#c45c26]/40"
                 />
               </div>
@@ -193,7 +184,8 @@ export default function LoginPage() {
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={3}
+                  placeholder="Qualquer senha"
                   className="w-full border border-[#e8d5c4] rounded-xl px-3.5 py-2.5 text-sm bg-[#faf6f1] focus:outline-none focus:ring-2 focus:ring-[#c45c26]/40"
                 />
               </div>
@@ -216,18 +208,18 @@ export default function LoginPage() {
             <p className="text-sm text-center text-[#6b5b4b] mt-6">
               {modo === "login" ? (
                 <span>
-                  Ainda não tem conta?{" "}
+                  Quer testar outro perfil?{" "}
                   <button
                     type="button"
                     onClick={irParaCadastro}
                     className="text-[#c45c26] font-semibold underline"
                   >
-                    Criar conta
+                    Criar conta (demo)
                   </button>
                 </span>
               ) : (
                 <span>
-                  Já tem conta?{" "}
+                  Já escolheu o perfil?{" "}
                   <button
                     type="button"
                     onClick={irParaLogin}
@@ -238,6 +230,11 @@ export default function LoginPage() {
                 </span>
               )}
             </p>
+
+            <div className="mt-5 p-3 rounded-xl bg-[#f0f7f4] border border-[#c5e0d4] text-[11px] text-[#1e4640] leading-relaxed">
+              <strong>Modo demonstração:</strong> qualquer e-mail e senha funcionam.
+              Use "Criar conta" para escolher entre Aluno, Professor ou Administrador.
+            </div>
           </div>
 
           <p className="text-center text-[11px] text-[#6b5b4b]/80 mt-6">
