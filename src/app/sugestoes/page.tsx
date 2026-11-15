@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { getSupabase } from "@/lib/supabase/client";
 import {
   PageHeroBanner,
   SugestoesIllustration,
-  WaveDivider,
 } from "@/components/SvgDecorations";
+import { addFeedback } from "@/lib/demo-auth";
 
 const categorias = [
   "Infraestrutura",
@@ -33,41 +32,37 @@ export default function SugestoesPage() {
     setMensagemErro("");
 
     try {
-      const res = await fetch("/api/moderar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto }),
-      });
-
-      const analise = await res.json();
-
-      if (!analise.permitido) {
-        setStatus("erro");
-        setMensagemErro(
-          analise.motivo ||
-            "Seu texto contém linguagem que não está de acordo com as regras de convivência da escola. Por favor, reescreva de forma respeitosa."
-        );
-        return;
+      let permitido = true;
+      try {
+        const res = await fetch("/api/moderar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto }),
+        });
+        if (res.ok) {
+          const analise = await res.json();
+          permitido = Boolean(analise.permitido);
+          if (!permitido) {
+            setStatus("erro");
+            setMensagemErro(
+              analise.motivo ||
+                "Seu texto contém linguagem que não está de acordo com as regras de convivência da escola."
+            );
+            return;
+          }
+        }
+      } catch {
+        // demo: se moderação falhar, deixa passar
       }
 
-      const supabase = getSupabase();
-      const { error } = await supabase.from("feedbacks").insert({
-        categoria,
-        texto: texto.trim(),
-        status: "PENDENTE",
-      });
-
-      if (error) throw new Error(error.message);
-
+      addFeedback({ categoria, texto: texto.trim() });
       setStatus("sucesso");
       setTexto("");
       setCategoria("");
     } catch (err) {
       setStatus("erro");
       setMensagemErro(
-        err instanceof Error
-          ? err.message
-          : "Erro ao enviar. Tente novamente em alguns instantes."
+        err instanceof Error ? err.message : "Erro ao enviar. Tente novamente."
       );
     }
   }
@@ -85,92 +80,60 @@ export default function SugestoesPage() {
 
       {status === "sucesso" ? (
         <div className="bg-secondary-soft border border-secondary/30 rounded-3xl p-8 text-center shadow-2xs">
-          <svg className="w-16 h-16 mx-auto mb-3 svg-float" viewBox="0 0 64 64" fill="none">
-            <circle cx="32" cy="32" r="28" fill="#2f6f4e" />
-            <path d="M20 32l8 8 16-16" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
           <p className="font-bold text-lg text-secondary mb-2">Enviado com sucesso!</p>
           <p className="text-sm text-muted mb-5">
-            Sua mensagem passou pela moderação e será analisada com atenção pela administração.
+            Sua mensagem será analisada com atenção pela administração.
           </p>
           <button
             type="button"
             onClick={() => setStatus("idle")}
-            className="text-sm bg-primary text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-dark"
+            className="text-sm bg-primary text-white font-semibold px-5 py-2.5 rounded-xl"
           >
             Enviar outra mensagem
           </button>
         </div>
       ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xs relative overflow-hidden"
-        >
-          <svg
-            className="pointer-events-none absolute -right-6 -bottom-6 w-36 h-36 opacity-10"
-            viewBox="0 0 100 100"
-            fill="none"
-          >
-            <circle cx="50" cy="50" r="40" stroke="#2f6f4e" strokeWidth="4" strokeDasharray="8 6" />
-          </svg>
-
+        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xs">
           <div>
-            <label htmlFor="categoria" className="block text-sm font-bold text-foreground mb-1.5">
-              Categoria da mensagem *
-            </label>
+            <label className="block text-sm font-bold mb-1.5">Categoria *</label>
             <select
-              id="categoria"
               value={categoria}
               onChange={(e) => setCategoria(e.target.value)}
-              className="w-full border border-border rounded-xl px-3.5 py-2.5 bg-background/60 text-sm"
+              className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm"
               required
             >
-              <option value="">Selecione uma área...</option>
+              <option value="">Selecione...</option>
               {categorias.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
-
           <div>
-            <label htmlFor="texto" className="block text-sm font-bold text-foreground mb-1.5">
-              Sua mensagem anônima *
-            </label>
+            <label className="block text-sm font-bold mb-1.5">Mensagem anônima *</label>
             <textarea
-              id="texto"
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
               rows={6}
-              className="w-full border border-border rounded-xl px-3.5 py-2.5 resize-y text-sm bg-background/60"
-              placeholder="Descreva sua sugestão, elogio ou reclamação de forma clara e respeitosa..."
+              className="w-full border border-border rounded-xl px-3.5 py-2.5 text-sm"
+              placeholder="Descreva de forma clara e respeitosa..."
               required
               minLength={10}
             />
-            <p className="text-xs text-muted mt-1.5 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-secondary inline-block" />
-              Mínimo de 10 caracteres. Mensagens ofensivas são filtradas automaticamente pela IA.
-            </p>
           </div>
-
-          {status === "erro" && (
+          {status === "erro" && mensagemErro && (
             <div className="bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 rounded-xl">
               {mensagemErro}
             </div>
           )}
-
           <button
             type="submit"
             disabled={status === "enviando"}
-            className="w-full bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-60 shadow-xs"
+            className="bg-secondary text-white font-semibold px-6 py-2.5 rounded-xl disabled:opacity-60"
           >
-            {status === "enviando" ? "Analisando e enviando..." : "Enviar mensagem anônima"}
+            {status === "enviando" ? "Enviando..." : "Enviar mensagem anônima"}
           </button>
         </form>
       )}
-
-      <WaveDivider color="#2f6f4e" />
     </div>
   );
 }

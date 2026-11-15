@@ -3,240 +3,123 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getSupabase } from "@/lib/supabase/client";
+import {
+  getDemoUser,
+  getFeedbacks,
+  updateFeedbackStatus,
+  type DemoFeedback,
+} from "@/lib/demo-auth";
 import {
   PageHeroBanner,
   AdminIllustration,
   EmptyStateIllustration,
-  WaveDivider,
 } from "@/components/SvgDecorations";
-
-type Feedback = {
-  id: string;
-  categoria: string;
-  texto: string;
-  status: string;
-  created_at: string;
-};
 
 export default function AdminPage() {
   const router = useRouter();
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [feedbacks, setFeedbacks] = useState<DemoFeedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
   const [autorizado, setAutorizado] = useState(false);
-  const [aba, setAba] = useState<"feedbacks" | "gestao">("feedbacks");
   const [meuRole, setMeuRole] = useState("");
 
   useEffect(() => {
-    async function carregar() {
-      try {
-        const supabase = getSupabase();
-
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          router.push("/login");
-          return;
-        }
-
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        let role = profile?.role || "";
-        const metaRole = (user.user_metadata?.role as string) || "";
-
-        if (metaRole === "ADMIN" && role !== "ADMIN") {
-          await supabase.from("profiles").upsert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || "",
-            role: "ADMIN",
-          });
-          role = "ADMIN";
-        }
-
-        if (!role) {
-          const novo = metaRole || "ALUNO";
-          await supabase.from("profiles").upsert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || "",
-            role: novo,
-          });
-          role = novo;
-        }
-
-        setMeuRole(role);
-
-        if (role !== "ADMIN") {
-          setErro(
-            `Seu perfil atual é "${role || "desconhecido"}". Apenas ADMIN acessa este painel. Rode o SQL no Supabase para corrigir (veja instruções).`
-          );
-          setLoading(false);
-          return;
-        }
-
-        setAutorizado(true);
-
-        const { data, error } = await supabase
-          .from("feedbacks")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (error) setErro(error.message);
-        else setFeedbacks(data || []);
-      } catch (e) {
-        setErro(e instanceof Error ? e.message : "Erro ao carregar.");
-      } finally {
-        setLoading(false);
-      }
+    const user = getDemoUser();
+    if (!user) {
+      router.push("/login");
+      return;
     }
-
-    carregar();
+    setMeuRole(user.role);
+    if (user.role !== "ADMIN") {
+      setErro(
+        `Seu perfil atual é "${user.role}". Apenas ADMIN acessa este painel. Faça logout e crie uma conta de Administrador.`
+      );
+      setAutorizado(false);
+      setLoading(false);
+      return;
+    }
+    setAutorizado(true);
+    setFeedbacks(getFeedbacks());
+    setLoading(false);
   }, [router]);
 
-  async function atualizarStatus(id: string, status: string) {
-    const supabase = getSupabase();
-    const { error } = await supabase
-      .from("feedbacks")
-      .update({ status })
-      .eq("id", id);
-
-    if (!error) {
-      setFeedbacks((prev) =>
-        prev.map((f) => (f.id === id ? { ...f, status } : f))
-      );
-    }
+  function mudarStatus(id: string, status: DemoFeedback["status"]) {
+    updateFeedbackStatus(id, status);
+    setFeedbacks(getFeedbacks());
   }
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-14 text-center text-muted">
-        Carregando...
-      </div>
-    );
-  }
-
-  if (!autorizado) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-14">
-        <div className="bg-card border border-border rounded-3xl p-6 text-center">
-          <p className="text-foreground font-semibold mb-2">Acesso restrito</p>
-          <p className="text-muted text-sm mb-4">{erro}</p>
-          <p className="text-xs text-muted mb-4">
-            Perfil detectado: <b>{meuRole || "—"}</b>
-          </p>
-          <div className="bg-primary-soft rounded-xl p-4 text-left text-xs text-foreground mb-4">
-            <p className="font-semibold mb-2">Como virar ADMIN de verdade:</p>
-            <ol className="list-decimal pl-4 space-y-1 text-muted">
-              <li>Abra o Supabase → SQL Editor</li>
-              <li>
-                Rode:{" "}
-                <code className="text-[11px] break-all">
-                  update public.profiles set role = 'ADMIN' where email =
-                  'seu.email@escola.pr.gov.br';
-                </code>
-              </li>
-              <li>Saia do site e entre de novo</li>
-            </ol>
-          </div>
-          <Link href="/" className="text-primary font-medium underline text-sm">
-            Voltar ao início
-          </Link>
-        </div>
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-sm text-muted">
+        Carregando painel...
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-4 py-10">
       <PageHeroBanner
-        badge="Gestão Escolar"
-        title="Painel Administrativo"
-        subtitle="Acompanhe sugestões e reclamações moderadas e gerencie os conteúdos publicados no portal."
-        accentColor="#1b365d"
-        softBg="#e8eef5"
+        badge="Painel Administrativo"
+        title="Administração"
+        subtitle="Gerencie sugestões, reclamações e acompanhe o uso do portal."
+        accentColor="#15803D"
+        softBg="#E6F8EF"
         illustration={<AdminIllustration />}
       />
 
-      <div className="flex gap-2 mb-6">
-        <button
-          type="button"
-          onClick={() => setAba("feedbacks")}
-          className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-            aba === "feedbacks"
-              ? "bg-primary text-white"
-              : "bg-white border border-border text-foreground hover:border-primary"
-          }`}
-        >
-          Sugestões e reclamações
-        </button>
-        <button
-          type="button"
-          onClick={() => setAba("gestao")}
-          className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-            aba === "gestao"
-              ? "bg-primary text-white"
-              : "bg-white border border-border text-foreground hover:border-primary"
-          }`}
-        >
-          Gestão de conteúdos
-        </button>
-      </div>
-
-      {aba === "feedbacks" && (
+      {!autorizado ? (
+        <div className="bg-red-50 border border-red-200 text-red-800 rounded-3xl p-6 text-sm">
+          <p className="font-semibold mb-2">Acesso restrito</p>
+          <p>{erro}</p>
+          <p className="mt-3">Perfil atual: <strong>{meuRole || "desconhecido"}</strong></p>
+          <Link href="/login" className="inline-block mt-4 font-semibold text-primary underline">
+            Voltar ao login e escolher perfil ADMIN
+          </Link>
+        </div>
+      ) : (
         <>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <h2 className="font-bold text-lg">Sugestões e reclamações</h2>
+            <span className="text-xs text-muted">
+              {feedbacks.length} registro{feedbacks.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+
           {feedbacks.length === 0 ? (
-            <EmptyStateIllustration label="Nenhuma mensagem recebida ainda." />
+            <div className="text-center py-12">
+              <EmptyStateIllustration />
+              <p className="mt-4 text-sm text-muted">
+                Nenhuma mensagem ainda. Envie uma pela Ouvidoria para testar.
+              </p>
+            </div>
           ) : (
             <div className="space-y-4">
-              {feedbacks.map((fb) => (
-                <article
-                  key={fb.id}
-                  className="bg-card border border-border rounded-3xl p-5"
-                >
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="text-xs font-semibold bg-primary-soft text-primary px-2.5 py-1 rounded-full">
-                      {fb.categoria}
+              {feedbacks.map((f) => (
+                <article key={f.id} className="bg-card border border-border rounded-2xl p-5">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="text-[11px] font-bold uppercase bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                      {f.categoria}
                     </span>
-                    <span className="text-xs text-muted">
-                      {new Date(fb.created_at).toLocaleString("pt-BR")}
+                    <span className="text-[11px] text-muted">
+                      {new Date(f.created_at).toLocaleString("pt-BR")}
                     </span>
-                    <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                        fb.status === "PENDENTE"
-                          ? "bg-amber-100 text-amber-800"
-                          : fb.status === "RESOLVIDO"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-slate-100 text-slate-700"
-                      }`}
-                    >
-                      {fb.status.replace("_", " ")}
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">
+                      {f.status.replace("_", " ")}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground leading-relaxed mb-4 whitespace-pre-wrap">
-                    {fb.texto}
-                  </p>
+                  <p className="text-sm whitespace-pre-wrap mb-4">{f.texto}</p>
                   <div className="flex flex-wrap gap-2">
-                    {["PENDENTE", "EM_ANALISE", "RESOLVIDO", "ARQUIVADO"].map(
-                      (s) => (
-                        <button
-                          key={s}
-                          type="button"
-                          onClick={() => atualizarStatus(fb.id, s)}
-                          disabled={fb.status === s}
-                          className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-primary hover:text-primary disabled:opacity-40 transition-colors"
-                        >
-                          {s.replace("_", " ")}
-                        </button>
-                      )
-                    )}
+                    {(["PENDENTE", "EM_ANALISE", "RESOLVIDO", "ARQUIVADO"] as const).map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        disabled={f.status === s}
+                        onClick={() => mudarStatus(f.id, s)}
+                        className="text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-border hover:bg-background disabled:opacity-40"
+                      >
+                        {s.replace("_", " ")}
+                      </button>
+                    ))}
                   </div>
                 </article>
               ))}
@@ -244,49 +127,6 @@ export default function AdminPage() {
           )}
         </>
       )}
-
-      {aba === "gestao" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link
-            href="/cardapio"
-            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
-          >
-            <h3 className="font-bold text-foreground mb-1">Cardápio semanal</h3>
-            <p className="text-sm text-muted">
-              Visualize e edite a programação da cantina.
-            </p>
-          </Link>
-          <Link
-            href="/materiais"
-            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
-          >
-            <h3 className="font-bold text-foreground mb-1">Materiais</h3>
-            <p className="text-sm text-muted">
-              Como admin, você também pode publicar materiais.
-            </p>
-          </Link>
-          <Link
-            href="/enquetes"
-            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
-          >
-            <h3 className="font-bold text-foreground mb-1">Enquetes</h3>
-            <p className="text-sm text-muted">
-              Crie e acompanhe votações da comunidade.
-            </p>
-          </Link>
-          <Link
-            href="/gremio"
-            className="bg-card border border-border rounded-3xl p-5 hover:border-primary transition-colors"
-          >
-            <h3 className="font-bold text-foreground mb-1">Grêmio e eventos</h3>
-            <p className="text-sm text-muted">
-              Comunicados da comunidade estudantil.
-            </p>
-          </Link>
-        </div>
-      )}
-
-      <WaveDivider color="#1b365d" />
     </div>
   );
 }
